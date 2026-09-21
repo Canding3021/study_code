@@ -1,0 +1,41 @@
+/* 设置标题位置 */
+h1 {
+  text-align: center; /* 设置标题文本居中 */
+  margin-top: 15px;
+  color:#4682B4;
+}
+
+/*设置表格在浏览器中的位置*/
+table {
+    margin: 0 auto; /* 水平居中 */
+    margin-top: 15px; /* 距页面顶端距离 */
+}
+
+/* 设置单元格内容之间的距离和位置 */
+td {
+    padding: 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* 设置输入框样式 */
+.text {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* 设置按钮样式 */
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 15px;
+    font-size: 17px;
+    background-color: #4682B4;
+    color: #fff;
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+    <!-- 引入CSS文件 -->
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/register.css">
+    <link rel="stylesheet" href="../css/footer.css">
+</head>
+<body>
+<!-- 导航栏 -->
+<div class="navbar">
+    <div class="navbar-brand">网上衣橱</div>
+    <ul>
+        <li><a href="#">首页</a></li>
+        <li><a href="#">服装风格</a></li>
+        <li><a href="#">服装类型</a></li>
+        <li><a href="#">购物车</a></li>
+        <li><a href="#">个人中心</a></li>
+        <li><a href="#">后台管理</a></li>
+        <li><a href="#" class="active">登录/注册</a></li>
+    </ul>
+    <div class="right-section">
+        <span class="profile-icon">&#128100;</span>
+    </div>
+</div>
+
+<!-- 注册表单 -->
+<h1>用户注册</h1>
+<form id="registerForm">
+    <table>
+        <tr>
+            <td>用户名：</td>
+            <td><input type="text" class="text" id="username" name="username"></td>
+        </tr>
+        <tr>
+            <td>密码：</td>
+            <td><input type="password" class="text" id="password" name="password"></td>
+        </tr>
+        <tr>
+            <td>性别：</td>
+            <td>
+                <input type="radio" id="male" name="gender" value="male">
+                <label for="male">男</label>
+                <input type="radio" id="female" name="gender" value="female">
+                <label for="female">女</label>
+            </td>
+        </tr>
+        <tr>
+            <td>风格：</td>
+            <td>
+                <input type="checkbox" id="sport" name="style" value="sport">
+                <label for="sport">运动风</label>
+                <input type="checkbox" id="casual" name="style" value="casual">
+                <label for="casual">休闲风</label>
+                <input type="checkbox" id="mature" name="style" value="mature">
+                <label for="mature">轻熟风</label>
+                <input type="checkbox" id="simple" name="style" value="simple">
+                <label for="simple">简约风</label>
+            </td>
+        </tr>
+        <tr>
+            <td>手机号：</td>
+            <td><input type="text" class="text" id="phone" name="phone"></td>
+        </tr>
+        <tr>
+            <td>收货地址：</td>
+            <td><input type="text" class="text" id="address" name="address"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="button" class="button" onclick="validateForm()">注册</button>
+                <button type="button" class="button" onclick="resetForm()">重置</button>
+                <a href="#">去登录</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<!-- 页脚 -->
+<div class="footer">
+    <p>联系我们：<a href="https://www.itcast.cn/" target="_blank">https://www.itcast.cn/</a></p>
+</div>
+
+<!-- 引入JavaScript文件 -->
+<script src="../js/register_ai.js"></script>
+</body>
+</html>

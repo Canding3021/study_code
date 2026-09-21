@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>心理调查问卷</title>
+		<style>
+			* {
+			    margin: 0;
+			    padding: 0;
+			    box-sizing: border-box; 
+			    font-family: sans-serif;
+			    font-size: 18px;
+			}
+
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				min-height: 100vh;
+				background: #f7f8fa;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				padding: 10px;
+			}
+
+			/* 恐怖黑屏遮罩 */
+			.terror-mask {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: #000;
+				z-index: 9999;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.terror-text {
+				color: #d80000;
+				font-size: clamp(14px, 3vw, 18px);
+				letter-spacing: 6px;
+				white-space: nowrap;
+			}
+
+			/* 核心自适应盒子 */
+			.box {
+				background: white;
+				width: 100%;
+				height: 100%;
+				max-width: 600px;
+				max-height: 90vh;
+				padding: 25px 20px;
+				border-radius: 12px;
+				box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+				position: relative;
+				z-index: 10;
+				transition: opacity 0.3s;
+				display: none;
+				flex-direction: column;
+				overflow: hidden;
+			}
+
+			.title {
+				font-size: clamp(22px, 4vw, 24px);
+				margin-bottom: 15px;
+				text-align: center;
+				color: #333;
+				font-weight: bold;
+				flex-shrink: 0;
+			}
+
+			.progress {
+				text-align: center;
+				font-size: clamp(12px, 2.5vw, 13px);
+				color: #666;
+				margin-bottom: 15px;
+				flex-shrink: 0;
+			}
+
+			.question {
+				font-size: clamp(16px, 3vw, 18px);
+				line-height: 1.6;
+				color: #222;
+				min-height: 35px;
+				margin-bottom: 15px;
+				flex-shrink: 0;
+			}
+
+			.options {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				flex: 1;
+				overflow-y: auto;
+				padding-right: 5px;
+			}
+
+			.option {
+				padding: 14px;
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: clamp(16px, 2.8vw, 18px);
+				background: #fff;
+				transition: all 0.2s;
+				line-height: 1.4;
+				flex-shrink: 0;
+				min-height: 48px;
+				display: flex;
+				align-items: center;
+				position: relative;
+				z-index: 2;
+			}
+
+			.option.selected {
+				background: #dbdbdb;
+				border-color: #aaa;
+			}
+
+			.option.locked {
+				background: #f2f2f2 !important;
+				color: #999 !important;
+				cursor: not-allowed !important;
+				border-color: #eee !important;
+			}
+
+			.btn-group {
+				display: flex;
+				justify-content: space-between;
+				margin-top: 15px;
+				flex-shrink: 0;
+			}
+
+			.btn {
+				padding: 12px 20px;
+				border: none;
+				border-radius: 6px;
+				font-size: clamp(16px, 2.5vw, 18px);
+				cursor: pointer;
+				transition: 0.2s;
+				flex: 1;
+				max-width: 120px;
+				text-align: center;
+				position: relative;
+				z-index: 2;
+			}
+
+			.prev-btn {
+				background: #eee;
+				color: #333;
+				margin-right: 10px;
+			}
+
+			.next-btn {
+				background: #555;
+				color: #fff;
+			}
+
+			.btn:disabled {
+				opacity: 0.4;
+				cursor: not-allowed;
+			}
+
+			/* 第八题漂浮文字 */
+			.float-text {
+				position: fixed;
+				color: #000;
+				font-weight: bold;
+				background: transparent;
+				padding: 4px 10px;
+				border-radius: 10px;
+				pointer-events: none;
+				z-index: 9999;
+				white-space: nowrap;
+				text-shadow: none;
+				font-size: clamp(14px, 2vw, 16px);
+			}
+
+			/* 第25题 全覆盖层级 */
+			.peep-text {
+				position: fixed;
+				color: #ff2b2b;
+				opacity: 0.18;
+				font-size: clamp(16px, 2.2vw, 18px);
+				pointer-events: none;
+				z-index: 99;
+				white-space: nowrap;
+				animation: slowFade 4s infinite alternate;
+			}
+
+			.q25-gray-mask {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: rgba(90, 90, 90, 0.25);
+				pointer-events: none;
+				z-index: 98;
+			}
+
+			@keyframes slowFade {
+				0% { opacity: 0.12; }
+				100% { opacity: 0.22; }
+			}
+
+			/* 全屏打字 */
+			.fullscreen-love {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: #000;
+				z-index: 99999;
+				padding: 20px;
+				font-size: clamp(18px, 3vw, 20px);
+				color: #ff0000;
+				font-weight: bold;
+				line-height: 1.6;
+				white-space: pre-wrap;
+				overflow: hidden;
+			}
+
+			/* 初始提示框 */
+			.start-modal {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: min(90vw, 280px);
+				background: #fff;
+				border: 2px solid #bbbbbb;
+				border-radius: 12px;
+				z-index: 999999;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 20px 15px;
+				gap: 8px;
+			}
+
+			.start-text {
+				font-size: clamp(14px, 2.8vw, 16px);
+				color: #333;
+				line-height: 1.8;
+				text-align: center;
+			}
+
+			.tiny-red-tip {
+				font-size: clamp(10px, 2vw, 9px);
+				color: #ff2222;
+				text-align: center;
+				line-height: 1.4;
+				margin: 4px 0;
+			}
+
+			.start-btn {
+				background: #999999;
+				color: #fff;
+				border: none;
+				border-radius: 6px;
+				padding: 10px 20px;
+				font-size: clamp(14px, 2.5vw, 16px);
+				cursor: pointer;
+				margin-top: 8px;
+			}
+
+			.diary-wrap {
+				display: none;
+				width: 100%;
+				height: 100%;
+				max-width: 600px;
+				max-height: 90vh;
+				padding: 25px 20px;
+				border-radius: 12px;
+				background: #fff;
+				box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+				position: relative;
+				z-index: 10;
+				overflow: hidden;
+				flex-direction: column;
+			}
+
+			.diary-date {
+				position: absolute;
+				top: 15px;
+				left: 20px;
+				font-size: clamp(12px, 2.5vw, 14px);
+				color: #666;
+			}
+
+			.diary-content {
+				margin-top: 25px;
+				line-height: 2;
+				font-size: clamp(14px, 2.7vw, 16px);
+				color: #222;
+				letter-spacing: 1px;
+				height: calc(100% - 80px);
+				overflow-y: auto;
+				padding-bottom: 10px;
+			}
+
+			.diary-page1,
+			.diary-page2,
+			.diary-page3 {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.diary-page4 {
+			    display: none;
+			    width: 100%;
+			    height: 100%;
+			    display: flex;
+			    flex-direction: column;
+			    justify-content: center;
+			    align-items: center;
+			    text-align: center;
+			    padding: 20px 30px;
+			    box-sizing: border-box;
+			    position: absolute;
+			    top: 0;
+			    left: 0;
+			}
+			
+			.diary-page4 .diary-content {
+			    width: 100%;
+			    height: auto;
+			    margin: 0;
+			    font-size: clamp(14px, 3.5vw, 16px);
+			    line-height: 2.2;
+			    display: flex;
+			    flex-direction: column;
+			    justify-content: center;
+			    align-items: center;
+			}
+
+			.page-next,
+			.page-prev {
+				position: absolute;
+				font-size: clamp(18px, 4vw, 20px);
+				cursor: pointer;
+				color: #333;
+				z-index: 1;
+				bottom: 15px;
+			}
+
+			.page-prev {
+				left: 20px;
+			}
+
+			.page-next {
+				right: 20px;
+			}
+
+			.diary-page2,
+			.diary-page3,
+			.diary-page4 {
+				display: none;
+			}
+
+			.black-full-text {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: #000;
+				z-index: 99999999;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				color: #ff0000;
+				font-size: clamp(20px, 5vw, 24px);
+				font-weight: bold;
+				gap: 30px;
+			}
+
+			.red-confirm-btn {
+				background: #ff0000;
+				color: #fff;
+				border: none;
+				padding: 8px 22px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: clamp(11px, 2.5vw, 12px);
+			}
+
+			.end-modal {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: #fff;
+				padding: 35px 30px;
+				border-radius: 12px;
+				z-index: 99999999;
+				text-align: center;
+				width: min(90vw, 320px);
+				border: 2px solid #ccc;
+			}
+
+			.q16-modal,
+			.submit-modal,
+			.black-screen {
+				width: 100vw;
+				height: 100vh;
+			}
+
+			.q16-modal {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: min(90vw, 200px);
+				height: auto;
+				background: #fff;
+				border: 3px solid #ff0000;
+				border-radius: 12px;
+				z-index: 999999;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 15px;
+				gap: 20px;
+			}
+
+			.q16-text {
+				font-size: clamp(14px, 3vw, 16px);
+				color: #000;
+				font-weight: bold;
+			}
+
+			.q16-btn {
+				background: #ff0000;
+				color: #fff;
+				border: none;
+				border-radius: 6px;
+				padding: 6px 18px;
+				font-size: clamp(12px, 2.5vw, 14px);
+				cursor: pointer;
+			}
+
+			.submit-modal {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: rgba(0, 0, 0, 0.3);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 999999;
+			}
+
+			.submit-modal-inner {
+			    background: #fff;
+			    padding: 35px 30px;
+			    border-radius: 12px;
+			    text-align: center;
+			    width: min(90vw, 320px);
+			    border: 2px solid #ccc;
+			    box-sizing: border-box;
+			}
+
+			.submit-btn {
+				padding: 10px 20px;
+				border: none;
+				background: #333;
+				color: #fff;
+				border-radius: 6px;
+				cursor: pointer;
+				margin: 15px 0 8px;
+				font-size: clamp(14px, 2.5vw, 16px);
+				transition: all 0.2s;
+			}
+
+			.refuse-tip {
+				color: red;
+				font-size: clamp(10px, 2.5vw, 12px);
+			}
+
+			.black-screen {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: #000;
+				z-index: 9999999;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				color: #ff0000;
+				font-size: clamp(16px, 4vw, 20px);
+				font-weight: bold;
+				text-align: center;
+				line-height: 1.8;
+			}
+
+			/* 红字提示浮层 */
+			.red-tip-float {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #d80000;
+				font-size: clamp(16px, 3vw, 20px);
+				font-weight: bold;
+				z-index: 99999;
+				pointer-events: none;
+				animation: fadeInOut 1s forwards;
+				text-align: center;
+				white-space: nowrap;
+			}
+
+			@keyframes fadeInOut {
+				0% { opacity: 0; }
+				20% { opacity: 1; }
+				80% { opacity: 1; }
+				100% { opacity: 0; }
+			}
+
+			/* 页面震动 */
+			@keyframes shake {
+				0%,100% { transform: translateX(0); }
+				20% { transform: translateX(-6px); }
+				40% { transform: translateX(6px); }
+				60% { transform: translateX(-4px); }
+				80% { transform: translateX(4px); }
+			}
+
+			.shaking {
+				animation: shake 0.5s ease;
+			}
+
+			/* 镜子图标闪烁 */
+			@keyframes mirrorFlash {
+				0%,100% { border-color: #ddd; }
+				50% { border-color: #ff0000; }
+			}
+			
+			/* 日记文字抖动 */
+			@keyframes diaryShake {
+				0%,100% { transform: translate(0, 0) rotate(0deg); }
+				25% { transform: translate(2px, 1px) rotate(0.5deg); }
+				50% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+				75% { transform: translate(1px, -1px) rotate(0.3deg); }
+			}
+			
+			/* 日记乱码闪烁 */
+			.diary-glitch {
+				animation: diaryShake 0.15s infinite;
+			}
+			
+			/* 日记恐惧颤动 */
+			@keyframes diaryTremble {
+				0%,100% { transform: translate(0, 0); }
+				10% { transform: translate(-2px, -1px); }
+				20% { transform: translate(2px, 1px); }
+				30% { transform: translate(-1px, 2px); }
+				40% { transform: translate(1px, -2px); }
+				50% { transform: translate(-2px, 1px); }
+				60% { transform: translate(2px, -1px); }
+				70% { transform: translate(-1px, -2px); }
+				80% { transform: translate(1px, 2px); }
+				90% { transform: translate(-2px, -1px); }
+			}
+			
+			.diary-tremble {
+				animation: diaryTremble 0.3s infinite;
+			}
+			
+			/* 未选择提示抖动弹窗 */
+			@keyframes refuseShake {
+				0%,100% { transform: translate(-50%, -50%) rotate(0deg); }
+				10% { transform: translate(calc(-50% + 5px), calc(-50% - 3px)) rotate(1deg); }
+				20% { transform: translate(calc(-50% - 5px), calc(-50% + 3px)) rotate(-1deg); }
+				30% { transform: translate(calc(-50% + 3px), calc(-50% - 5px)) rotate(0.5deg); }
+				40% { transform: translate(calc(-50% - 3px), calc(-50% + 5px)) rotate(-0.5deg); }
+				50% { transform: translate(calc(-50% + 5px), calc(-50% - 2px)) rotate(1deg); }
+				60% { transform: translate(calc(-50% - 5px), calc(-50% + 2px)) rotate(-1deg); }
+				70% { transform: translate(calc(-50% + 3px), calc(-50% - 5px)) rotate(0.5deg); }
+				80% { transform: translate(calc(-50% - 3px), calc(-50% + 5px)) rotate(-0.5deg); }
+				90% { transform: translate(calc(-50% + 5px), calc(-50% - 3px)) rotate(1deg); }
+			}
+			
+			.refuse-shake-modal {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(0, 0, 0, 0.9);
+				color: #ff4444;
+				padding: 20px 30px;
+				border-radius: 12px;
+				font-size: 16px;
+				z-index: 999999;
+				animation: refuseShake 0.5s ease-in-out;
+				text-align: center;
+				box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+				border: 2px solid #ff4444;
+				max-width: 280px;
+				word-wrap: break-word;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box" id="mainBox">
+			<div class="title">心理健康调查问卷</div>
+			<div class="progress" id="progress">第 1 题 / 共 30 题</div>
+			<div class="question" id="question"></div>
+			<div class="options" id="options"></div>
+			<div class="btn-group">
+				<button class="btn prev-btn" id="prevBtn">上一题</button>
+				<button class="btn next-btn" id="nextBtn">下一题</button>
+			</div>
+		</div>
+
+		<div class="diary-wrap" id="diaryWrap">
+			<div class="diary-page1" id="diaryPage1">
+				<div class="diary-date">04.24 阴</div>
+				<div class="diary-content" id="diaryContent1">
+					（大片黑笔划掉无法辨认）<br>
+					今天又看<span style="color:red;font-size:14px;">dao</span>你了，在窗<span style="color:red;font-size:14px;">bian</span><br>
+					你以为拉上窗帘就<span style="color:red;font-size:14px;">kan</span>不到吗^^<br>
+					墙<span style="color:red;font-size:14px;">bi</span>的缝隙、衣柜角落、门后黑影<br>
+					（字迹潦草扭曲）我一<span style="color:red;font-size:14px;">zhi</span>在<span style="color:red;font-size:14px;">kan</span>你<br>
+					你被吓哭的样子，好可爱好想*哭你<br>
+					乱码：@%……&* 视线不会离开<br>
+					（浅红色晕染痕迹）<span style="color:red;">别躲，跑不掉的</span><br>
+					<span style="color:red;">好喜欢你</span>好喜欢你好喜欢你喜欢......<br>
+				</div>
+				<div class="page-next" id="toPage2">→</div>
+			</div>
+		
+			<div class="diary-page2" id="diaryPage2">
+				<div class="diary-date">04.25 无天光</div>
+				<div class="diary-content" id="diaryContent2">
+					昨晚你深夜起<span style="color:red;font-size:14px;">ye</span>，我都记<span style="color:red;font-size:14px;">xia</span>了<br>
+					你回头的瞬间，我<span style="color:red;font-size:14px;">cang</span>在暗处<br>
+					（反复涂改：<span style="color:red;">喜欢你</span>｜盯<span style="color:red;font-size:14px;">ni</span>｜<span style="color:red;">占有</span>）<br>
+					空房间的脚步声不是幻<span style="color:red;font-size:14px;">jue</span><br>
+					是我在慢慢靠近你的每一寸空间<br>
+					<span style="color:red;">为什么不愿意说我爱你？</span><br>
+					（墨迹晕开、断句破碎）<br>
+					回答我，必<span style="color:red;font-size:14px;">xu</span>回答我……
+				</div>
+				<div class="page-prev" id="toPage1">←</div>
+				<div class="page-next" id="toPage3">→</div>
+			</div>
+		
+			<div class="diary-page3" id="diaryPage3">
+				<div class="diary-date">04.26 永夜</div>
+				<div class="diary-content" id="diaryContent3">
+					我不允许你拥有除我之外的一切<br>
+					你的呼吸、身体、情绪都该属于我<br>
+					乖乖留在我身边<br>
+					永远、永远，只准看着我一个人<br>
+					<span style="color:red; font-size:22px; font-weight:bold;">我爱你^_^</span><br>
+					<span style="color:red; font-size:16px;">爱你</span>
+					<span style="color:red; font-size:18px;">爱你</span>
+					<span style="color:red; font-size:21px;">爱你</span>
+					<span style="color:red; font-size:24px;">爱......</span><br>
+				</div>
+				<div class="page-prev" id="toPage2Back">←</div>
+				<div class="page-next" id="toPage4">→</div>
+			</div>
+		
+			<div class="diary-page4" id="diaryPage4">
+				<div class="diary-content">
+					<div style="color:#999;" id="diaryPage4Top">又只有我自己了……</div>
+					<div style="color:#666;margin:15px 0;" id="diaryPage4Mid">你愿意成为我的爱人，永远陪着我吗？</div>
+					<button class="start-btn" id="agreeBtn">我愿意</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const questions = [{
+					q: "1. 独处待在房间时，你总觉得暗处有视线在盯着你吗？",
+					opt: ["A. 经常会", "B. 偶尔察觉", "C. 几乎不会", "D. 完全没有"]
+				},
+				{
+					q: "2. 深夜关灯后，你会刻意回避看向镜子、玻璃反光物吗？",
+					opt: ["A.一定会避开", "B.偶尔不敢看", "C.无所谓", "D.很喜欢直视"]
+				},
+				{
+					q: "3. 你目前和伴侣的相处关系状态如何？",
+					opt: ["A.相处和睦，关系很好", "B.平淡疏离，不太要好", "C.长期冷战，互不沟通", "D.孤身一人，没有伴侣"]
+				},
+				{
+					q: "4. 安静的深夜里，你曾听见屋内出现细碎、不明的异响吗？",
+					opt: ["A.常常听到", "B.偶尔听见", "C.从没听过", "D.以为是错觉"]
+				},
+				{
+					q: "5. 走在空旷、昏暗的走廊或小巷，会下意识加快脚步吗？",
+					opt: ["A.极度紧张快步走", "B.会稍微加速", "C.正常行走", "D.毫无感觉"]
+				},
+				{
+					q: "6. 睡觉前，你会反复检查门窗、柜子是否完全关好锁死？",
+					opt: ["A.反复确认很多次", "B.简单检查一遍", "C.从不检查", "D.懒得在意"]
+				},
+				{
+					q: "7. 发呆放空时，耳边会出现模糊、听不清的低语声吗？",
+					opt: ["A.时常出现", "B.偶尔恍惚听到", "C.从未有过", "D.只当是幻听"]
+				},
+				{
+					q: "8. 无风吹动的情况下，你见过窗帘、衣物莫名轻轻晃动？",
+					opt: ["A.亲眼见过", "B.隐约注意过", "C.没有见过", "D.没留意过"]
+				},
+				{
+					q: "9. 你害怕半夜突然响起的手机提示音、门铃声这类异响吗？",
+					opt: ["A.极度害怕", "B.有点抵触心慌", "C.毫无波澜", "D.反而习惯"]
+				},
+				{
+					q: "10. 路过空无一人的封闭房间，会下意识往里张望打量吗？",
+					opt: ["A.不敢看却忍不住瞟", "B.会简单看一眼", "C.直接路过", "D.刻意绕开"]
+				},
+				{
+					q: "11. 你是否长期隐瞒自己的作息，不想被他人完全摸清？",
+					opt: ["A.刻意隐藏所有作息", "B.会隐瞒一部分", "C.完全公开", "D.无所谓别人知道"]
+				},
+				{
+					q: "12. 雾气朦胧的镜子前，你不敢长时间注视自己的倒影？",
+					opt: ["A.完全不敢", "B.看久会心慌", "C.正常对视", "D.毫无顾忌"]
+				},
+				{
+					q: "13. 走夜路时，你总下意识不敢回头，害怕身后有东西？",
+					opt: ["A.全程不敢回头", "B.偶尔会顾虑", "C.随意回头", "D.从不害怕"]
+				},
+				{
+					q: "14. 空无一人的家里，你曾听到过微弱脚步声或呼吸声吗？",
+					opt: ["A.清晰听到过", "B.模糊感知过", "C.从未听到", "D.自我安慰是幻觉"]
+				},
+				{
+					q: "15. 极度安静的环境里，你会产生莫名的心慌与压抑感？",
+					opt: ["A.安静越久越恐惧", "B.偶尔会不适", "C.没有任何感觉", "D.没有不适感还很享受"]
+				},
+				{
+					q: "16. 你会频繁怀疑，有人在悄悄翻看你的社交动态与日常？",
+					opt: ["A.一直心存戒备", "B.偶尔会担心", "C.从不怀疑", "D.无所谓被看见"]
+				},
+				{
+					q: "17. 深夜独自待着时，你是否会隐隐希望身边有陌生存在陪着你？",
+					opt: ["A.十分渴望", "B.偶尔会想", "C.完全不需要", "D.十分抗拒"]
+				},
+				{
+					q: "18. 你做过情节相似、场景固定、反复循环的重复噩梦？",
+					opt: ["A.经常做同类噩梦", "B.有过几次", "C.很少做梦", "D.从不做噩梦"]
+				},
+				{
+					q: "19. 你曾遇到过时间错乱、钟表异常、记忆断层的奇怪时刻？",
+					opt: ["A.多次遇到", "B.偶然发生", "C.从未有过", "D.记错而已"]
+				},
+				{
+					q: "20. 独自在家时，你会拒绝一切深夜陌生的敲门与求助吗？",
+					opt: ["A.绝对不会回应", "B.谨慎试探", "C.会正常回应", "D.主动开门查看"]
+				},
+				{
+					q: "21. 你会刻意假装忙碌，刻意不回复别人的消息来独处吗？",
+					opt: ["A.经常这样", "B.偶尔会", "C.几乎不会", "D.从来不会"]
+				},
+				{
+					q: "22. 空白墙面、阴暗角落，会让你产生莫名的压抑与恐惧？",
+					opt: ["A.看见就不舒服", "B.偶尔在意", "C.完全无感", "D.习惯角落"]
+				},
+				{
+					q: "23. 短暂失联时，你会害怕有人刻意四处寻找你的踪迹？",
+					opt: ["A.十分恐惧", "B.有点担心", "C.完全不怕", "D.期待被找到"]
+				},
+				{
+					q: "24. 醒来的一瞬间，你时常分不清现实与梦境的边界？",
+					opt: ["A.经常混淆", "B.偶尔恍惚", "C.从未混乱", "D.意识清醒但感官混乱"]
+				},
+				{
+					q: "25. 你相信，有看不见的未知事物，一直徘徊在我们身边？",
+					opt: ["A.完全相信", "B.半信半疑", "C.绝不相信", "D.刻意回避思考"]
+				},
+				{
+					q: "26. 你习惯手机不离手，绝不随意把设备单独放置角落？",
+					opt: ["A.时刻随身携带", "B.尽量不放独处角落", "C.随意摆放", "D.经常乱丢"]
+				},
+				{
+					q: "27. 密闭黑暗的狭小空间，会让你产生强烈的窒息感吗？",
+					opt: ["A.极度压抑难受", "B.稍有不适", "C.可以适应", "D.完全喜欢"]
+				},
+				{
+					q: "28. 你是否会反感他人过度打探你的生活细节与小习惯？",
+					opt: ["A.极度抵触警惕", "B.有点反感", "C.可以接受", "D.乐意分享"]
+				},
+				{
+					q: "29. 明明没有任何异常，却总会莫名觉得当下氛围不对劲？",
+					opt: ["A.经常莫名违和", "B.偶尔敏感多想", "C.神经大条无感", "D.从不胡思乱想"]
+				},
+				{
+					q: "30. 如果有陌生人默默记下了你所有喜好、习惯与小动作",
+					opt: ["A.极致恐惧抵触", "B.细思极恐不安", "C.有点暖心", "D.十分期待"]
+				}
+			];
+
+			let current = 0;
+			let answers = Array(questions.length).fill(null);
+			const total = questions.length;
+			const prevBtn = document.getElementById('prevBtn');
+			const nextBtn = document.getElementById('nextBtn');
+			const optionsEl = document.getElementById('options');
+			const boxEl = document.querySelector('.box');
+			const mainBox = document.getElementById("mainBox");
+			const diaryWrap = document.getElementById("diaryWrap");
+			const diaryPage1 = document.getElementById("diaryPage1");
+			const diaryPage2 = document.getElementById("diaryPage2");
+			const diaryPage3 = document.getElementById("diaryPage3");
+			const diaryPage4 = document.getElementById("diaryPage4");
+
+		let fromQ4ToQ5 = false;
+		let q5Timer = null;
+		let q25Timer = null;
+		let q25Elements = [];
+		let grayMask = null;
+		let wrongCount = 0;
+		let lockSubmitBtn = false;
+		let q25Locked = false;
+		
+			// 恐惧值系统
+			let fearCount = 0;
+			
+			// 日记抖动控制
+			let diaryShakeTimer = null;
+			let diaryShakeTriggered = {}; // 记录每页是否已触发过抖动
+		
+		// 重置所有状态
+		function resetAllState() {
+			current = 0;
+			answers = Array(questions.length).fill(null);
+			wrongCount = 0;
+			fearCount = 0;
+			lockSubmitBtn = false;
+			fromQ4ToQ5 = false;
+			q25Locked = false;
+		}
+
+			// ===== 全局状态追踪（结局 & 跨题分支）=====
+			// ans[n] 表示第 n+1 题（0-indexed）选项索引 0=A,1=B,2=C,3=D
+			// 这里用 answers 数组同时承担该职责
+
+			// 记录是否触发q2选A（第2题选A）
+			function q2SelectedA() { return answers[1] === 0; }
+			// 记录q1选项
+			function q1Sel() { return answers[0]; }
+			// 记录q3选项
+			function q3Sel() { return answers[2]; }
+			// 记录q4选项
+			function q4Sel() { return answers[3]; }
+			// 记录q6选C
+			function q6SelectedC() { return answers[5] === 2; }
+			// 记录q9选A
+			function q9SelectedA() { return answers[8] === 0; }
+			// 记录q10选C
+			function q10SelectedC() { return answers[9] === 2; }
+			// 记录q11选D
+			function q11SelectedD() { return answers[10] === 3; }
+			// 记录q15选A
+			function q15SelectedA() { return answers[14] === 0; }
+			// 记录q16选项
+			function q16Sel() { return answers[15]; }
+			// 记录q19选A
+			function q19SelectedA() { return answers[18] === 0; }
+			// 记录q21选项
+			function q21Sel() { return answers[20]; }
+			
+			function clearAllEffects() {
+				// 清理 Q25 偷看特效
+				if (q25Timer) {
+					clearTimeout(q25Timer);
+					q25Timer = null;
+				}
+				if (q25Elements.length > 0) {
+					q25Elements.forEach(el => el.remove());
+					q25Elements = [];
+				}
+				if (grayMask) {
+					grayMask.remove();
+					grayMask = null;
+				}
+				if (q5Timer) clearTimeout(q5Timer);
+				const darkEl = document.getElementById('darkenOverlay');
+				if (darkEl) darkEl.remove();
+				document.querySelectorAll(
+					'.float-text,.terror-mask,.fullscreen-love,.start-modal,.q16-modal,.submit-modal,.black-screen,.black-full-text,.end-modal,.red-tip-float'
+				).forEach(el => el.remove());
+				document.body.style.background = "#f7f8fa";
+				boxEl.style.opacity = "1";
+				prevBtn.disabled = false;
+				nextBtn.disabled = false;
+			}
+
+			// 结局判断
+			function getEnding() {
+				// 惩罚结局：第30题选A
+				if (answers[29] === 0) return 'punish';
+				// 救赎结局：第3B+11C+17B+28C+30C 全满足
+				if (answers[2] === 1 && answers[10] === 2 && answers[16] === 1 && answers[27] === 2 && answers[29] === 2) return 'redemption';
+				// 占有结局：满足任一条件
+				if (answers[2] === 3 || answers[16] === 0 || answers[22] === 3 || answers[27] === 3 || answers[29] === 3) return 'possess';
+				// 默认占有
+				return 'possess';
+			}
+
+			// ===== 工具函数 =====
+
+			function showRedTip(text, durationMs) {
+				const tip = document.createElement('div');
+				tip.className = 'red-tip-float';
+				tip.innerText = text;
+				tip.style.animationDuration = (durationMs || 1000) + 'ms';
+				document.body.appendChild(tip);
+				setTimeout(() => tip.remove(), durationMs || 1000);
+			}
+
+			function shakeBody() {
+				document.body.classList.remove('shaking');
+				void document.body.offsetWidth;
+				document.body.classList.add('shaking');
+				setTimeout(() => document.body.classList.remove('shaking'), 600);
+			}
+
+			function flashPage(color, durationMs) {
+				const el = document.createElement('div');
+				el.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:${color};z-index:99998;pointer-events:none;`;
+				document.body.appendChild(el);
+				setTimeout(() => el.remove(), durationMs || 200);
+			}
+			
+			// 未选择时的抖动弹窗
+			function showRefuseShake() {
+				const refuseMsgs = [
+					'不可以这样哦^^',
+					'要选一个哦~',
+					'不回答的话...我会伤心的',
+					'选我嘛~',
+					'你跑不掉的哦...开玩笑的，选一个吧^^'
+				];
+				const msg = refuseMsgs[Math.floor(Math.random() * refuseMsgs.length)];
+				const modal = document.createElement('div');
+				modal.className = 'refuse-shake-modal';
+				modal.innerText = msg;
+				document.body.appendChild(modal);
+				setTimeout(() => modal.remove(), 1500);
+			}
+
+			function darkenPage(durationMs) {
+				const el = document.createElement('div');
+				el.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.55);z-index:9000;pointer-events:none;';
+				el.id = 'darkenOverlay';
+				document.body.appendChild(el);
+				setTimeout(() => el.remove(), durationMs || 2000);
+			}
+
+			function lockOptionTemporary(divEl, text, ms, onUnlock) {
+				const orig = divEl.innerText;
+				divEl.innerText = text || orig;
+				divEl.classList.add('locked');
+				const oldClick = divEl.onclick;
+				divEl.onclick = null;
+				setTimeout(() => {
+					divEl.innerText = orig;
+					divEl.classList.remove('locked');
+					divEl.onclick = oldClick;
+					if (onUnlock) onUnlock();
+				}, ms || 1500);
+			}
+
+		// ===== 核心特效函数 =====
+
+		// Q25 max elements cap to prevent lag
+		const MAX_Q25_ELEMENTS = 60;
+
+		function clearAllEffects() {
+			// 清理 Q25 偷看特效
+			if (q25Timer) {
+				clearTimeout(q25Timer);
+				q25Timer = null;
+			}
+			if (q25Elements.length > 0) {
+				q25Elements.forEach(el => el.remove());
+				q25Elements = [];
+			}
+			if (grayMask) {
+				grayMask.remove();
+				grayMask = null;
+			}
+			if (q5Timer) clearTimeout(q5Timer);
+			const darkEl = document.getElementById('darkenOverlay');
+			if (darkEl) darkEl.remove();
+			document.querySelectorAll(
+				'.float-text,.terror-mask,.fullscreen-love,.start-modal,.q16-modal,.submit-modal,.black-screen,.black-full-text,.end-modal,.red-tip-float'
+			).forEach(el => el.remove());
+			document.body.style.background = "#f7f8fa";
+			boxEl.style.opacity = "1";
+			prevBtn.disabled = false;
+			nextBtn.disabled = false;
+		}
+
+			function resetDiary() {
+				diaryPage1.style.display = "block";
+				diaryPage2.style.display = "none";
+				diaryPage3.style.display = "none";
+				diaryPage4.style.display = "none";
+				diaryWrap.style.display = "none";
+			}
+
+			function stopQ25Effect() {
+				if (q25Timer) clearInterval(q25Timer);
+				q25Elements.forEach(el => { if (el && el.parentNode) el.remove(); });
+				q25Elements = [];
+				if (grayMask && grayMask.parentNode) grayMask.remove();
+				grayMask = null;
+				q25Locked = false;
+				document.querySelectorAll('.option').forEach(opt => {
+					opt.classList.remove('locked');
+					opt.style.pointerEvents = 'auto';
+				});
+			}
+
+			function startQ25Effect() {
+				if (q25Locked) return;
+				stopQ25Effect();
+				q25Locked = true;
+				document.querySelectorAll('.option').forEach(opt => {
+					opt.classList.add('locked');
+					opt.style.pointerEvents = 'none';
+				});
+
+				grayMask = document.createElement('div');
+				grayMask.className = "q25-gray-mask";
+				document.body.appendChild(grayMask);
+
+				let peepArr = [
+					"我一直在看着你",
+					"不要躲开哦^^",
+					"我看见你了",
+					"你跑不掉的",
+					"我在你身边",
+					"我来找你了^^",
+					"你早就被盯上了",
+					"悄悄看着你",
+					"爱你爱你爱你",
+					"别离开视线",
+					"你逃不掉的",
+					"一直陪着你"
+				];
+
+				// 补充分支：第1题选C → 混入隐藏文字
+				if (q1Sel() === 2) peepArr.push("我在窗帘后", "我在窗帘后", "我在窗帘后");
+
+				// 持续时长：第3题选A/C → 8秒，其余5秒；第1题选C → 提前无延迟触发
+				let duration = 5000;
+				if (q3Sel() === 0 || q3Sel() === 2) duration = 8000;
+
+				// 数量：第1题选B → 飘屏减少（颜色变浅）
+				let batchCount = 15;
+				let peepColor = '#ff2b2b';
+				let peepOpacity = '0.18';
+				if (q1Sel() === 1) { batchCount = 8; peepOpacity = '0.10'; }
+
+			q25Timer = setInterval(() => {
+				// cleanup old elements to prevent lag
+				while (q25Elements.length >= MAX_Q25_ELEMENTS) {
+					const old = q25Elements.shift();
+					if (old && old.parentNode) old.remove();
+				}
+				for (let i = 0; i < Math.min(batchCount, 5); i++) {
+					const p = document.createElement('div');
+					p.className = "peep-text";
+					p.innerText = peepArr[Math.floor(Math.random() * peepArr.length)];
+					p.style.left = Math.random() * 100 + "vw";
+					p.style.top = Math.random() * 100 + "vh";
+					p.style.color = peepColor;
+					p.style.opacity = peepOpacity;
+					document.body.appendChild(p);
+					q25Elements.push(p);
+				}
+			}, 250);
+
+				setTimeout(() => stopQ25Effect(), duration);
+			}
+
+			function openStartModal() {
+				clearAllEffects();
+				mainBox.style.display = "none";
+
+				const tipTexts = [
+					"<b style='font-size:16px;'>欢迎参与本次心理调查问卷</b>",
+					"<b style='font-size:16px;'>请根据自身真实感受选择答案</b>",
+					"<b style='font-size:16px;'>题目含特殊互动效果^_^</b>",
+					"<b style='font-size:16px;'>准备就绪，开始答题</b>"
+				];
+				let idx = 0;
+				const modal = document.createElement("div");
+				modal.className = "start-modal";
+				const textDom = document.createElement("div");
+				textDom.className = "start-text";
+				textDom.innerHTML = tipTexts[idx];
+				const redTip = document.createElement("div");
+				redTip.className = "tiny-red-tip";
+				redTip.innerText = "注：本问卷包含微恐/窥视/强制，如有不适请立即停止作答";
+				const btnDom = document.createElement("button");
+				btnDom.className = "start-btn";
+				btnDom.innerText = "继续";
+				btnDom.onclick = function() {
+					idx++;
+					if (idx < tipTexts.length) {
+						textDom.innerHTML = tipTexts[idx];
+						if (idx === tipTexts.length - 1) btnDom.innerText = "进入";
+					} else {
+						modal.remove();
+						mainBox.style.display = "flex";
+						renderQuestion();
+					}
+				};
+				modal.appendChild(textDom);
+				modal.appendChild(redTip);
+				modal.appendChild(btnDom);
+				document.body.appendChild(modal);
+			}
+
+			function startQ5Effect() {
+				if (q5Timer) clearTimeout(q5Timer);
+				// 第4题选A/D → 持续5秒+低语音效；选B/C → 正常3秒
+				const q4 = q4Sel();
+				const extended = (q4 === 0 || q4 === 3);
+				const totalDuration = extended ? 5000 : 3000;
+
+				q5Timer = setTimeout(() => {
+					if (current !== 4) return;
+					const opts = document.querySelectorAll('.option');
+					const originalTexts = Array.from(opts).map(o => o.innerText);
+					opts.forEach(o => o.style.pointerEvents = "none");
+					prevBtn.disabled = true;
+					nextBtn.disabled = true;
+					setTimeout(() => opts[0].innerText = "亲爱的等我好吗", 0);
+					setTimeout(() => opts[1].innerText = "亲爱的等我好吗", 300);
+					setTimeout(() => opts[2].innerText = "亲爱的等我好吗", 600);
+					setTimeout(() => opts[3].innerText = "亲爱的等我好吗", 900);
+					setTimeout(() => {
+						if (current !== 4) return;
+						opts.forEach((o, i) => o.innerText = originalTexts[i]);
+						opts.forEach(o => o.style.pointerEvents = "auto");
+						prevBtn.disabled = current === 0;
+						nextBtn.disabled = false;
+					}, totalDuration);
+				}, 1500);
+			}
+
+			const glitchChars = ["@#￥%", "……&*", "!@#$", "%^&*", "#￥%……", "&*^^", "@*&%", "#￥……&"];
+
+			function startQ8Effect(selectedIndex) {
+				document.documentElement.style.setProperty('background', '#d80000', 'important');
+				document.body.style.setProperty('background', '#d80000', 'important');
+				boxEl.style.opacity = "0";
+				prevBtn.disabled = true;
+				nextBtn.disabled = true;
+				document.querySelectorAll('.option').forEach(o => o.style.pointerEvents = "none");
+
+				// 第1题选B → 颜色变浅无glitch；选C → 混入隐藏文字
+				let textList = selectedIndex < 2 ? ["亲爱的你注意到我了^^", "我好开心"] : ["亲爱的你是故意的吗^^", "我好难过"];
+				if (q1Sel() === 2) textList.push("我在窗帘后", "我在窗帘后");
+
+				const useGlitch = q1Sel() !== 1;
+				const floatColor = q1Sel() === 1 ? 'rgba(200,0,0,0.5)' : '#000';
+				const duration = selectedIndex < 2 ? 6000 : 4000;
+
+				const created = [];
+				const centerX = 50;
+				const centerY = 50;
+
+				let timer = setInterval(() => {
+					for (let i = 0; i < 10; i++) {
+						const el = document.createElement('div');
+						el.className = "float-text";
+						el.style.color = floatColor;
+						el.innerText = (useGlitch && Math.random() > 0.5) ?
+							textList[Math.floor(Math.random() * textList.length)] :
+							(useGlitch ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : textList[Math.floor(Math.random() * textList.length)]);
+						const offsetX = (Math.random() - 0.5) * 100;
+						const offsetY = (Math.random() - 0.5) * 100;
+						el.style.left = (centerX + offsetX) + "vw";
+						el.style.top = (centerY + offsetY) + "vh";
+						el.style.fontSize = 12 + Math.random() * 16 + "px";
+						document.body.appendChild(el);
+						created.push(el);
+					}
+				}, 200);
+
+				setTimeout(() => {
+					clearInterval(timer);
+					created.forEach(e => e.remove());
+					document.documentElement.style.setProperty('background', '#f7f8fa', 'important');
+					document.body.style.setProperty('background', '#f7f8fa', 'important');
+					boxEl.style.opacity = "1";
+					prevBtn.disabled = current === 0;
+					nextBtn.disabled = false;
+					document.querySelectorAll('.option').forEach(o => o.style.pointerEvents = "auto");
+					current++;
+					renderQuestion();
+				}, duration);
+			}
+
+			function triggerTerror(text, nextQ) {
+				const mask = document.createElement('div');
+				mask.className = 'terror-mask';
+				const t = document.createElement('div');
+				t.className = 'terror-text';
+				mask.appendChild(t);
+				document.body.appendChild(mask);
+				let idx = 0;
+
+				function ty() {
+					if (idx < text.length) {
+						t.innerText += text[idx];
+						idx++;
+						setTimeout(ty, 80);
+					} else {
+						setTimeout(() => {
+							let gt = setInterval(() => {
+								t.innerText = t.innerText.split('').sort(() => Math.random() - 0.5).join('');
+							}, 60);
+							setTimeout(() => {
+								clearInterval(gt);
+								mask.remove();
+								current = nextQ;
+								renderQuestion();
+							}, 600);
+						}, 1000);
+					}
+				}
+				ty();
+			}
+
+			function startLoveTyping(durationMs, onEnd) {
+				boxEl.style.opacity = "0";
+				prevBtn.disabled = true;
+				nextBtn.disabled = true;
+				const el = document.createElement("div");
+				el.className = "fullscreen-love";
+				document.body.appendChild(el);
+				const str = "我爱你";
+				let i = 0;
+				const targetLen = Math.floor((durationMs || 3000) / 10);
+				let timer = setInterval(() => {
+					el.innerText += str[i % 3];
+					i++;
+					if (el.innerText.length >= targetLen) {
+						clearInterval(timer);
+						setTimeout(() => {
+							el.remove();
+							boxEl.style.opacity = "1";
+							prevBtn.disabled = current === 0;
+							nextBtn.disabled = false;
+							if (onEnd) onEnd();
+							else { current++; renderQuestion(); }
+						}, 200);
+					}
+				}, 10);
+			}
+
+			function openQ16Modal(enhanced, withBlur) {
+				const texts = ["^^", "亲爱的", "我看见你了", "......"];
+				let index = 0;
+				const modal = document.createElement("div");
+				modal.className = "q16-modal";
+				// 第9题选A → 边框闪烁
+				if (enhanced) {
+					modal.style.animation = 'mirrorFlash 0.4s infinite';
+				}
+				const textEl = document.createElement("div");
+				textEl.className = "q16-text";
+				textEl.innerText = texts[index];
+				// 第15题选A → 背景模糊虚影
+				if (withBlur) {
+					const blurEl = document.createElement('div');
+					blurEl.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,200,200,0.15);filter:blur(2px);border-radius:12px;pointer-events:none;';
+					modal.appendChild(blurEl);
+				}
+				const btn = document.createElement("button");
+				btn.className = "q16-btn";
+				btn.innerText = "继续";
+				btn.onclick = () => {
+					index++;
+					if (index < texts.length) {
+						if (enhanced) textEl.style.animation = 'none'; // 停止闪烁后渐稳
+						textEl.innerText = texts[index];
+						if (index === texts.length - 1) btn.innerText = "关闭";
+					} else {
+						modal.remove();
+					}
+				};
+				modal.append(textEl, btn);
+				document.body.appendChild(modal);
+			}
+
+			function showSecondChanceScreen() {
+				const screen = document.createElement("div");
+				screen.className = "black-screen";
+				screen.innerText = "不要试图违背我^^";
+				document.body.appendChild(screen);
+				setTimeout(() => {
+					screen.remove();
+					showInputModal(true); // 强制填入模式
+				}, 2000);
+			}
+			
+			function showThirdChanceScreen() {
+				const screen = document.createElement("div");
+				screen.className = "black-screen";
+				screen.style.color = "#ff6666";
+				screen.innerText = "这样我会伤心的^^";
+				document.body.appendChild(screen);
+				setTimeout(() => {
+					screen.innerText = "我的耐心是有限的哦";
+					screen.style.color = "#ffffff";
+					screen.style.textShadow = "0 0 2px #fff, 0 0 5px #fff, 0 0 8px #ddd";
+				}, 2000);
+				setTimeout(() => {
+					screen.remove();
+					showInputModal(true); // 强制填入模式
+				}, 4000);
+			}
+
+			function showInputModal(forceFill = false) {
+				clearAllEffects();
+				const modal = document.createElement("div");
+				modal.className = "submit-modal";
+				const inner = document.createElement("div");
+				inner.className = "submit-modal-inner";
+				inner.innerHTML = `
+				<div style="margin-bottom: 10px; font-size: 16px; text-align: center;">请输入指定文字解锁查看</div>
+				<div style="display: flex; flex-direction: column; gap: 16px; align-items: center; width: 100%;">
+					<input 
+						type="text" 
+						id="loveInput" 
+						placeholder="请输入：我爱你" 
+						style="
+							font-size: 16px;
+							padding: 10px 14px;
+							border: 1px solid #ccc;
+							border-radius: 8px;
+							width: 100%;
+							max-width: 280px;
+							box-sizing: border-box;
+						"
+					>
+					<button class="submit-btn" id="unlockBtn">继续</button>
+				</div>
+				`;
+				
+				modal.appendChild(inner);
+				document.body.appendChild(modal);
+
+				const input = document.getElementById("loveInput");
+				const unlockBtn = document.getElementById("unlockBtn");
+				
+				// 如果是强制填入模式，预填红色"我爱你"（不锁定，用户可以删除）
+				if (forceFill) {
+					input.value = "我爱你";
+					input.style.background = "#ffeeee";
+					input.style.color = "#d80000";
+					input.style.fontWeight = "bold";
+					input.style.border = "2px solid #d80000";
+				}
+
+				unlockBtn.disabled = false;
+				unlockBtn.classList.remove("locked");
+				unlockBtn.style.background = "";
+				unlockBtn.style.color = "";
+
+				input.addEventListener('input', function() {
+					if (input.value.trim() === "我爱你") {
+						unlockBtn.disabled = false;
+						unlockBtn.classList.remove("locked");
+						unlockBtn.style.background = "";
+						unlockBtn.style.color = "";
+					}
+				});
+
+				unlockBtn.onclick = function() {
+					const val = input.value.trim();
+					const ending = getEnding();
+					if (val === "我爱你") {
+						modal.remove();
+						mainBox.style.display = "none";
+						prepareDiary();
+						resetDiary();
+						diaryWrap.style.display = "flex";
+					} else {
+						wrongCount++;
+						// 惩罚结局：显示黑屏强制填入
+						if (ending === 'punish') {
+							modal.remove();
+							// 显示黑屏"你没有拒绝的权利"
+							const forceScreen = document.createElement("div");
+							forceScreen.className = "black-screen";
+							forceScreen.innerText = "你没有拒绝的权利";
+							document.body.appendChild(forceScreen);
+							
+							// 2秒后强制填入并弹出新输入框
+							setTimeout(() => {
+								forceScreen.remove();
+								const forceModal = document.createElement("div");
+								forceModal.className = "submit-modal";
+								const forceInner = document.createElement("div");
+								forceInner.className = "submit-modal-inner";
+								forceInner.innerHTML = `
+									<div style="margin-bottom: 10px; font-size: 16px; text-align: center; color: #d80000; font-weight: bold;">请输入指定文字解锁查看</div>
+									<div style="display: flex; flex-direction: column; gap: 16px; align-items: center; width: 100%;">
+										<input 
+											type="text" 
+											id="loveInput" 
+											value="我爱你" 
+											readonly
+											style="
+												font-size: 16px;
+												padding: 10px 14px;
+												border: 2px solid #d80000;
+												border-radius: 8px;
+												width: 100%;
+												max-width: 280px;
+												box-sizing: border-box;
+												background: #ffeeee;
+												color: #d80000;
+												font-weight: bold;
+												cursor: not-allowed;
+												user-select: none;
+												pointer-events: none;
+											"
+										>
+										<button class="submit-btn" id="unlockBtn" style="background: #d80000;">继续</button>
+									</div>
+								`;
+								forceModal.appendChild(forceInner);
+								document.body.appendChild(forceModal);
+								document.getElementById("unlockBtn").onclick = function() {
+									forceModal.remove();
+									mainBox.style.display = "none";
+									prepareDiary();
+									resetDiary();
+									diaryWrap.style.display = "flex";
+								};
+							}, 2000);
+						} else if (wrongCount === 1) {
+							// 第一次：显示"不要试图违背我"，强制填入
+							modal.remove();
+							showSecondChanceScreen();
+						} else if (wrongCount === 2) {
+							// 第二次：显示"这样我会伤心的^^"和"我的耐心是有限的哦"，强制填入
+							modal.remove();
+							showThirdChanceScreen();
+						} else {
+							// 第三次：强制跳转惩罚结局
+							modal.remove();
+							forceToPunishEnding();
+						}
+					}
+				};
+			}
+			
+			// 强制跳转惩罚结局
+			function forceToPunishEnding() {
+				// 设置惩罚结局的条件
+				answers[29] = 0; // 第30题强制设为A（惩罚结局条件）
+				fearCount = 20; // 高恐惧值
+				
+				// 显示黑屏
+				const screen = document.createElement("div");
+				screen.className = "black-screen";
+				screen.style.color = "#ff0000";
+				screen.style.fontSize = "24px";
+				screen.innerText = "你逃不掉的...";
+				document.body.appendChild(screen);
+				
+				setTimeout(() => {
+					screen.remove();
+					// 直接跳到结局
+					showFinalModal();
+				}, 2500);
+			}
+
+			// 根据结局修改日记内容
+			function prepareDiary() {
+				const ending = getEnding();
+				const c1 = document.getElementById('diaryContent1');
+				const c2 = document.getElementById('diaryContent2');
+				const c3 = document.getElementById('diaryContent3');
+				const p4Top = document.getElementById('diaryPage4Top');
+				const p4Mid = document.getElementById('diaryPage4Mid');
+
+				if (ending === 'redemption') {
+					// 救赎结局：去掉"占有"相关，增加"陪伴"
+					c2.innerHTML = `
+						昨晚你深夜起<span style="color:red;font-size:14px;">ye</span>，我都在<br>
+						我想守在你身边<br>
+						（反复涂改：<span style="color:pink;">陪伴你</span>｜<span style="color:pink;">一直在</span>）<br>
+						空房间的脚步声是我<br>
+						我只是想靠近你<br>
+						<span style="color:pink;">你愿意和我在一起吗？</span><br>
+						（墨迹轻柔、字迹平稳）<br>
+						我会等你，一直等……
+					`;
+					c3.innerHTML = `
+						我不想失去你<br>
+						你的笑声、你的习惯、你的存在<br>
+						我只想陪着你<br>
+						永远、永远，只要你开心<br>
+						<span style="color:pink; font-size:22px; font-weight:bold;">我喜欢你^_^</span><br>
+						<span style="color:pink; font-size:16px;">喜欢你</span>
+						<span style="color:pink; font-size:18px;">喜欢你</span>
+						<span style="color:pink; font-size:21px;">喜欢你</span>
+						<span style="color:pink; font-size:24px;">永远……</span><br>
+					`;
+					p4Top.style.color = '#aaa';
+					p4Top.innerText = '和你在一起的每一天……';
+					p4Mid.innerText = '你愿意和我一直在一起吗？';
+					// 日记页颜色变浅
+					document.getElementById('diaryPage1').style.background = '#fffafa';
+					document.getElementById('diaryPage2').style.background = '#fffafa';
+					document.getElementById('diaryPage3').style.background = '#fffafa';
+					// 救赎结局：低恐惧值，轻微文字抖动
+					c1.classList.add('diary-glitch');
+					c2.classList.add('diary-glitch');
+				} else if (ending === 'punish') {
+					// 惩罚结局：日记更扭曲，红字更密集，强烈颤动
+					c1.innerHTML = `
+						（大片血渍覆盖无法辨认）<br>
+						今天又跟着你了，在你家门口<br>
+						你以为锁上门就<span style="color:red;font-size:14px;">kan</span>不到吗^^<br>
+						门缝、猫眼、通风口<br>
+						（字迹被血覆盖）我一<span style="color:red;font-size:14px;">zhi</span>在<span style="color:red;font-size:14px;">deng</span>你<br>
+						你害怕的样子，好可爱好想抓住你<br>
+						乱码：@%……&* 别想逃<br>
+						（深红色晕染痕迹）<span style="color:red;font-weight:bold;">我找到你了</span><br>
+						<span style="color:red;font-weight:bold;">永远属于我</span>永远属于我永远属于我......<br>
+					`;
+					c2.innerHTML = `
+						昨晚你想逃，我都看见了<br>
+						你以为你能走？<br>
+						（反复涂改：<span style="color:red;font-weight:bold;">不许跑</span>｜<span style="color:red;">抓住你</span>｜<span style="color:red;font-weight:bold;">永远占有</span>）<br>
+						空房间的脚步声是我愤怒的心跳<br>
+						你敢拒绝我，我永远不会放过你<br>
+						<span style="color:red;font-weight:bold;">你逃不掉的！！</span><br>
+						（墨迹浓稠晕开）<br>
+						回答我，必<span style="color:red;font-size:14px;">xu</span>回答我……
+					`;
+					c3.innerHTML = `
+						你属于我<br>
+						你的一切都是我的<br>
+						不许拒绝，不许逃跑<br>
+						<span style="color:red; font-size:26px; font-weight:bold;">你跑不掉的！！！</span><br>
+						<span style="color:red; font-size:18px;">永远属于我</span>
+						<span style="color:red; font-size:20px;">属于我</span>
+						<span style="color:red; font-size:24px;">属于我……</span><br>
+					`;
+					p4Top.style.color = '#ff0000';
+					p4Top.innerText = '你已经无路可逃……';
+					p4Mid.style.color = '#ff0000';
+					p4Mid.innerText = '你永远是我的，不管你愿不愿意';
+					// 惩罚结局：高恐惧值，强烈颤动
+					c1.classList.add('diary-tremble');
+					c2.classList.add('diary-tremble');
+					c3.classList.add('diary-tremble');
+					p4Top.classList.add('diary-tremble');
+					// 页面背景变深红
+					document.getElementById('diaryPage1').style.background = '#fff0f0';
+					document.getElementById('diaryPage2').style.background = '#fff0f0';
+					document.getElementById('diaryPage3').style.background = '#fff0f0';
+				} else {
+					// 占有结局：中等恐惧，文字抖动
+					c1.classList.add('diary-glitch');
+					c2.classList.add('diary-glitch');
+				}
+				// 根据恐惧值添加额外效果
+				if (fearCount > 15) {
+					// 高恐惧：所有日记页强烈颤动
+					document.querySelectorAll('.diary-content').forEach(el => {
+						el.classList.remove('diary-glitch');
+						el.classList.add('diary-tremble');
+					});
+				}
+			}
+
+			function showFinalModal() {
+				clearAllEffects();
+				mainBox.style.display = "none";
+				const modal = document.createElement("div");
+				modal.className = "submit-modal";
+				const inner = document.createElement("div");
+				inner.className = "submit-modal-inner";
+				inner.innerHTML = `
+					<div style="font-size:16px;font-weight:bold;">问卷作答完毕</div>
+					<div style="margin:12px 0;">有一封你的留言是否要查看？</div>
+					<button class="submit-btn" id="yesBtn">是</button>
+					<div class="refuse-tip">不准拒绝^_^</div>
+				`;
+				modal.appendChild(inner);
+				document.body.appendChild(modal);
+				document.getElementById("yesBtn").onclick = function() {
+					modal.remove();
+					// 第30题选A → 惩罚结局先黑屏5秒
+					if (answers[29] === 0) {
+						const bs = document.createElement('div');
+						bs.className = 'black-screen';
+						bs.innerHTML = '<div>你害怕也没用，我不会放过你</div>';
+						document.body.appendChild(bs);
+						setTimeout(() => { bs.remove(); showInputModal(); }, 5000);
+					} else {
+						showInputModal();
+					}
+				};
+			}
+
+			// 日记页面切换时添加抖动效果（只触发一次，抖动一会儿后停止）
+			function triggerDiaryShake(pageId) {
+				const ending = getEnding();
+				const shouldShake = (ending === 'punish' || ending === 'possess' || fearCount > 8);
+				
+				if (shouldShake && !diaryShakeTriggered[pageId]) {
+					diaryShakeTriggered[pageId] = true; // 标记已触发
+					
+					// 移除已有的抖动
+					if (diaryShakeTimer) clearTimeout(diaryShakeTimer);
+					document.querySelectorAll('.diary-content, .diary-content-text').forEach(el => {
+						el.classList.remove('diary-glitch', 'diary-tremble');
+					});
+					
+					// 添加抖动效果
+					const shakeClass = (ending === 'punish' || fearCount > 15) ? 'diary-tremble' : 'diary-glitch';
+					document.querySelectorAll('.diary-content, .diary-content-text').forEach(el => {
+						el.classList.add(shakeClass);
+					});
+					
+					// 闪白效果
+					if (ending === 'punish' || fearCount > 15) {
+						flashPage('rgba(255,0,0,0.3)', 150);
+					} else {
+						flashPage('rgba(255,100,100,0.15)', 100);
+					}
+					
+					// 抖动2秒后停止
+					diaryShakeTimer = setTimeout(() => {
+						document.querySelectorAll('.diary-content, .diary-content-text').forEach(el => {
+							el.classList.remove('diary-glitch', 'diary-tremble');
+						});
+					}, 2000);
+				}
+			}
+			
+			document.getElementById("toPage2").onclick = function() {
+				triggerDiaryShake('page1');
+				diaryPage1.style.display = "none";
+				diaryPage2.style.display = "block";
+			};
+			document.getElementById("toPage1").onclick = function() {
+				diaryPage2.style.display = "none";
+				diaryPage1.style.display = "block";
+			};
+			document.getElementById("toPage3").onclick = function() {
+				triggerDiaryShake('page2');
+				diaryPage2.style.display = "none";
+				diaryPage3.style.display = "block";
+			};
+			document.getElementById("toPage2Back").onclick = function() {
+				diaryPage3.style.display = "none";
+				diaryPage2.style.display = "block";
+			};
+			document.getElementById("toPage4").onclick = function() {
+				triggerDiaryShake('page3');
+				diaryPage3.style.display = "none";
+				diaryPage4.style.display = "block";
+			};
+
+			document.getElementById("agreeBtn").onclick = function() {
+				clearAllEffects();
+				diaryWrap.style.display = "none";
+				const ending = getEnding();
+				const blackFull = document.createElement("div");
+				blackFull.className = "black-full-text";
+				document.body.appendChild(blackFull);
+
+				let textArr, canRestart;
+				if (ending === 'redemption') {
+					// 救赎结局
+					textArr = ["谢谢你愿意陪着我", "我会一直守护你", "永远在你身边"];
+					canRestart = true;
+					blackFull.style.color = '#ffaaaa';
+					// BGM变柔和
+					try { bgm.volume = 0.3; } catch(e){}
+				} else if (ending === 'punish') {
+					// 惩罚结局
+					textArr = ["你逃不掉的", "永远属于我", "我会一直盯着你"];
+					canRestart = true;
+					blackFull.style.color = '#ff0000';
+				} else {
+					// 占有结局（原流程）
+					textArr = ["我爱你", "好喜欢你", "想和你一直在一起"];
+					canRestart = true;
+					// BGM音量放大
+					try { bgm.volume = 0.9; } catch(e){}
+				}
+
+				blackFull.innerHTML = `
+				    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+				        <div class="text-container" style="height:40px; display:flex; align-items:center; justify-content:center;"></div>
+				        <button class="red-confirm-btn" style="display:none;">确认</button>
+				    </div>
+				`;
+				const textDom = blackFull.querySelector('.text-container');
+				const confirmBtn = blackFull.querySelector('.red-confirm-btn');
+				if (!canRestart) confirmBtn.style.display = 'none'; // 惩罚结局强制无按钮
+				let textIndex = 0;
+
+				function showNextText() {
+					if (textIndex < textArr.length) {
+						textDom.innerText = textArr[textIndex];
+						textIndex++;
+						if (textIndex === textArr.length && canRestart) {
+							setTimeout(() => { confirmBtn.style.display = "block"; }, 1000);
+						}
+						setTimeout(showNextText, 1500);
+					}
+				}
+				showNextText();
+
+				confirmBtn.onclick = function() {
+					blackFull.remove();
+					const endModal = document.createElement("div");
+					endModal.className = "end-modal";
+					const endingMsg = (ending === 'redemption') ? '你们会一直在一起' : '我在等你';
+					endModal.innerHTML = `
+						<div style="font-size:16px;font-weight:bold;margin-bottom:15px;">问卷已结束</div>
+						<div style="color:#666;margin-bottom:16px;">${endingMsg}</div>
+						<button class="start-btn" id="restartBtn">确认</button>
+					`;
+					document.body.appendChild(endModal);
+					// 自动重启：5秒后自动触发
+					let autoRestartTimer = setTimeout(() => {
+						const btn = document.getElementById("restartBtn");
+						if (btn) btn.click();
+					}, 5000);
+					document.getElementById("restartBtn").onclick = function() {
+						clearTimeout(autoRestartTimer);
+						endModal.remove();
+						clearAllEffects();
+						resetDiary();
+						resetAllState();
+						boxEl.style.display = "none";
+						// 移除日记颤动效果
+						document.querySelectorAll('.diary-content').forEach(el => {
+							el.classList.remove('diary-glitch', 'diary-tremble');
+						});
+						try { bgm.volume = 0.6; } catch(e){}
+						openStartModal();
+					};
+				};
+			};
+
+			// ===== 渲染题目 =====
+			function renderQuestion() {
+				clearAllEffects();
+				const q = questions[current];
+				document.getElementById("progress").innerText = `第 ${current+1} 题 / 共 ${total} 题`;
+				document.getElementById("question").innerText = q.q;
+				optionsEl.innerHTML = "";
+				boxEl.style.opacity = "1";
+
+				q.opt.forEach((item, idx) => {
+					const div = document.createElement("div");
+					div.className = "option";
+					if (answers[current] === idx) div.classList.add("selected");
+					div.innerText = item;
+					div.onclick = () => handleOptionClick(div, idx);
+					optionsEl.appendChild(div);
+				});
+
+				if (current === 4 && fromQ4ToQ5) {
+					startQ5Effect();
+					fromQ4ToQ5 = false;
+				}
+
+				prevBtn.disabled = current === 0;
+				nextBtn.innerText = current === total - 1 ? "提交问卷" : "下一题";
+			}
+
+			function handleOptionClick(div, idx) {
+				answers[current] = idx;
+				document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+				div.classList.add('selected');
+
+				// ===== 恐惧值累加 =====
+				// 高恐惧选项（A类）
+				const highFear = [0, 2, 5, 8, 12, 13, 16, 22, 24, 26, 28, 29].includes(current) && idx === 0;
+				// 中等恐惧选项（其他）
+				const mediumFear = (
+					(current === 3 && idx === 0) ||   // 第4题A
+					(current === 6 && idx === 0) ||   // 第7题A
+					(current === 7 && idx < 2) ||     // 第8题A/B
+					(current === 9 && (idx === 0 || idx === 3)) || // 第10题A/D
+					(current === 11 && (idx === 0 || idx === 3)) || // 第12题A/D
+					(current === 17 && (idx === 0 || idx === 3)) || // 第18题A/D
+					(current === 18 && idx === 0) ||   // 第19题A
+					(current === 21 && (idx === 0 || idx === 3)) || // 第22题A/D
+					(current === 23 && idx === 0)      // 第24题A
+				);
+				if (highFear) fearCount += 2;
+				if (mediumFear) fearCount += 1;
+
+				// ===== 第1题 =====
+				if (current === 0) {
+					if (idx === 0) {
+						// A：页面闪烁+红字"我在哦^^"
+						flashPage('rgba(200,0,0,0.08)', 800);
+						setTimeout(() => showRedTip('我在哦^^', 1000), 100);
+					} else if (idx === 3) {
+						// D：变红强制重选
+						div.style.color = '#d80000';
+						div.style.borderColor = '#d80000';
+						lockOptionTemporary(div, '你在骗我！', 1000, () => {
+							div.style.color = '';
+							div.style.borderColor = '';
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+			// ===== 第2题 =====
+			if (current === 1) {
+				if (idx === 0) {
+					// A：变暗 + 红字
+					darkenPage(2000);
+					showRedTip('你躲不掉的哦^^', 2000);
+					} else if (idx === 2) {
+						// C：边框变红+红字
+						div.style.borderColor = '#ff0000';
+						setTimeout(() => { div.style.borderColor = ''; }, 2000);
+						showRedTip('你不怕我吗？', 2000);
+					} else if (idx === 3) {
+						// D：只有红字提示
+						showRedTip('我在镜子里看着你', 2000);
+					}
+					return;
+				}
+
+				// ===== 第3题 =====
+				if (current === 2) {
+					if (idx === 3) {
+						// D：BGM音量调整（第3题选D）
+						try { bgm.volume = 0.8; } catch(e){}
+						triggerTerror("真让人高兴^^", current + 1);
+					} else {
+						// A/B/C
+						if (idx === 2) {
+							// C：黑屏1秒
+							flashPage('rgba(0,0,0,0.9)', 1000);
+						}
+						triggerTerror("真让人难过^^", current + 1);
+					}
+					return;
+				}
+
+			// ===== 第4题 =====
+			if (current === 3) {
+				if (idx === 0) {
+					// A：常常听到 - 无特殊效果
+					return;
+				}
+				if (idx === 2) {
+					// C：变红锁定提示
+					div.style.color = '#d80000';
+					lockOptionTemporary(div, '你没听见吗？我在走路哦', 2000, () => {
+						div.style.color = '';
+						answers[current] = null;
+						div.classList.remove('selected');
+					});
+					return;
+				}
+				if (idx === 3) {
+					// D：以为是错觉 - 隐藏弹窗
+					showRedTip('不是错觉哦^^', 2000);
+					return;
+				}
+				return;
+			}
+
+				// ===== 第5题 =====
+				// 特效在进入时自动触发，点选项无特殊分支
+				if (current === 4) return;
+
+				// ===== 第6题 =====
+				if (current === 5) {
+					if (idx === 0) {
+						// A：红字
+						showRedTip('不用检查哦，我已经进来了', 2500);
+					} else if (idx === 2) {
+						// C：全屏黑屏0.5秒
+						flashPage('rgba(0,0,0,0.9)', 500);
+						showRedTip('你好放心哦^^', 2000);
+					} else if (idx === 3) {
+						// D：锁死，强制重选
+						lockOptionTemporary(div, '不许懒得在意！', 1500, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+				// ===== 第7题 =====
+				if (current === 6) {
+					if (idx === 2) {
+						// C：红字+震动
+						showRedTip('你没听见吗？我在叫你', 2000);
+						shakeBody();
+					} else if (idx === 3) {
+						// D：变红
+						showRedTip('不是幻听哦', 1500);
+					}
+					return;
+				}
+
+				// ===== 第8题 =====
+				if (current === 7) {
+					startQ8Effect(idx);
+					return;
+				}
+
+				// ===== 第9题 =====
+				if (current === 8) {
+					if (idx === 0) {
+						// A：震动
+						shakeBody();
+					} else if (idx === 2) {
+						showRedTip('你真勇敢，但我会让你害怕的', 2500);
+					} else if (idx === 3) {
+						// D：锁死
+						lockOptionTemporary(div, '不许习惯！', 1500, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+			// ===== 第10题 =====
+			if (current === 9) {
+				if (idx === 0) {
+					// A：红字
+					showRedTip('我在房间里哦', 2000);
+				} else if (idx === 2) {
+					// C：直接路过
+					showRedTip('为什么不看看我TT', 2000);
+				} else if (idx === 3) {
+					// D（第6题选C触发）：刻意绕开 - 红字+路过提示
+					if (q6SelectedC()) {
+						showRedTip('你绕不开的哦^^', 2000);
+					} else {
+						showRedTip('我好伤心TT', 2000);
+					}
+				}
+				return;
+			}
+
+				// ===== 第11题 =====
+				if (current === 10) {
+					if (idx === 0) {
+						// A：红字+作息虚影
+						showRedTip('你藏不住的，我都知道', 2500);
+						const ghost = document.createElement('div');
+						ghost.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);color:rgba(200,0,0,0.2);font-size:12px;pointer-events:none;z-index:9000;';
+						ghost.innerText = '06:00 起床 22:00 睡觉 15:00 刷手机';
+						document.body.appendChild(ghost);
+						setTimeout(() => ghost.remove(), 1500);
+					} else if (idx === 2) {
+						showRedTip('真乖，我喜欢你这样', 2000);
+					} else if (idx === 3) {
+						// D：红字
+						showRedTip('不可以哦，只能让我知道^^', 2500);
+					}
+					return;
+				}
+
+				// ===== 第12题 =====
+				if (current === 11) {
+					if (idx === 0) {
+						if (q2SelectedA()) {
+							// A+第2题选A：闪一下
+							flashPage('rgba(0,0,0,0.5)', 300);
+							showRedTip('镜子里有我哦', 2500);
+						} else {
+							showRedTip('镜子里有我哦', 2000);
+						}
+					} else if (idx === 2) {
+						showRedTip('你敢看着我吗？', 2000);
+					} else if (idx === 3) {
+						// D：全屏闪红
+						flashPage('rgba(255,0,0,0.5)', 400);
+						showRedTip('我在镜子里等你', 2000);
+					}
+					return;
+				}
+
+				// ===== 第13题 =====
+				if (current === 12) {
+					if (idx === 0) {
+						// A：红字
+						showRedTip('为什么不回头看看我TT', 2500);
+					} else if (idx === 1) {
+						// B：红字
+						showRedTip('不要害怕呀^^', 2500);
+					} else if (idx === 2) {
+						showRedTip('你回头就能看到我哦', 2000);
+						shakeBody();
+					} else if (idx === 3) {
+						div.style.color = '#d80000';
+						showRedTip('你会害怕的', 1500);
+						setTimeout(() => { div.style.color = ''; }, 2000);
+					}
+					return;
+				}
+
+				// ===== 第14题 =====
+				if (current === 13) {
+					if (idx === 2) {
+						// C：判断第10题
+						if (!q10SelectedC()) {
+							showRedTip('你没听到吗？我在你身边', 2500);
+						}
+					} else if (idx === 3) {
+						// D：锁死
+						lockOptionTemporary(div, '不是幻觉哦', 1800, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+				// ===== 第15题 =====
+				if (current === 14) {
+					if (idx === 0) {
+						// A：静音5秒
+						try {
+							const v = bgm.volume;
+							bgm.volume = 0;
+							setTimeout(() => { bgm.volume = v; }, 5000);
+						} catch(e){}
+					} else if (idx === 2) {
+						showRedTip('你真冷静，我喜欢', 2000);
+					} else if (idx === 3) {
+						flashPage('rgba(0,0,0,0.6)', 500);
+						showRedTip('我陪你一起享受安静', 2500);
+					}
+					return;
+				}
+
+				// ===== 第16题 =====
+				if (current === 15) {
+					const enhanced = q9SelectedA();
+					const withBlur = q15SelectedA();
+					setTimeout(() => openQ16Modal(enhanced, withBlur), 100);
+					return;
+				}
+
+				// ===== 第17题 =====
+				if (current === 16) {
+					if (idx === 0) {
+						// A：全屏"我爱你"3秒，触发占有结局标记
+						startLoveTyping(3000, () => { current++; renderQuestion(); });
+					} else if (idx === 1) {
+						// B：全屏"我爱你"2秒
+						startLoveTyping(2000, () => { current++; renderQuestion(); });
+				} else {
+					// C/D：锁死
+					const q3s = q3Sel();
+					let lockText = '不许选^^';
+					let lockMs = 1500;
+					if (idx === 2 && q3s === 3) lockMs = 3000;
+					if (idx === 3 && (q3s === 0 || q3s === 2)) {
+						// 额外弹出红字
+						showRedTip('你敢抗拒我？？', 2000);
+					}
+						lockOptionTemporary(div, lockText, lockMs, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+				// ===== 第18题 =====
+				if (current === 17) {
+					if (idx === 0) {
+						// A：噩梦场景虚影
+						const ghost = document.createElement('div');
+						ghost.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(100,0,0,0.1);pointer-events:none;z-index:9000;filter:blur(3px);';
+						document.body.appendChild(ghost);
+						setTimeout(() => ghost.remove(), 3000);
+						showRedTip('你的噩梦是我哦', 2500);
+					} else if (idx === 2) {
+						showRedTip('我会让你梦到我的', 2000);
+					} else if (idx === 3) {
+						flashPage('rgba(255,255,255,0.8)', 300);
+						showRedTip('我会闯进你的梦里', 2500);
+					}
+					return;
+				}
+
+				// ===== 第19题 =====
+				if (current === 18) {
+					if (idx === 0) {
+						// A：进度条数字扭曲 + 数码闪烁特效
+						const prog = document.getElementById('progress');
+						const orig = prog.innerText;
+						const distort = () => {
+							prog.innerText = `第 ${Math.floor(Math.random()*30+1)} 题 / 共 ${Math.floor(Math.random()*30+1)} 题`;
+						};
+						let dt = setInterval(distort, 150);
+						// 数码闪烁遮罩层
+						let glitchTimer = null;
+						const glitchOverlay = document.createElement('div');
+						glitchOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:8888;mix-blend-mode:screen;';
+						document.body.appendChild(glitchOverlay);
+						const doGlitch = () => {
+							const h = window.innerHeight;
+							const y = Math.random() * h;
+							const slice = document.createElement('div');
+							slice.style.cssText = `position:absolute;left:0;top:${y}px;width:100%;height:${2+Math.random()*6}px;background:rgba(0,255,200,0.08);transform:translateX(${(Math.random()-0.5)*10}px);`;
+							glitchOverlay.appendChild(slice);
+							setTimeout(() => slice.remove(), 80);
+						};
+						glitchTimer = setInterval(doGlitch, 120);
+						setTimeout(() => { clearInterval(dt); clearInterval(glitchTimer); glitchOverlay.remove(); prog.innerText = orig; }, 3000);
+					} else if (idx === 2) {
+						showRedTip('你会遇到的', 2000);
+					} else if (idx === 3) {
+						div.style.color = '#d80000';
+						showRedTip('不是记错哦，是我在改时间', 2500);
+						setTimeout(() => { div.style.color = ''; }, 2500);
+					}
+					return;
+				}
+
+				// ===== 第20题 =====
+				if (current === 19) {
+					const q3s = q3Sel();
+					if (idx === 0) {
+						// A：改字+锁死
+						div.innerText = "亲爱的别拒绝我TT";
+						div.classList.add("locked");
+						div.onclick = null;
+						if (q3s === 0 || q3s === 2) showRedTip('你好狠心', 2000);
+					} else if (idx === 1) {
+						div.innerText = "真让人寒心^^";
+						div.classList.add("locked");
+						div.onclick = null;
+					} else if (idx === 2) {
+						div.innerText = "不许给别人开门哦";
+						div.classList.add("locked");
+						div.onclick = null;
+						if (q3s === 3) {
+							// 弹出爱心
+							const heart = document.createElement('div');
+							heart.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;z-index:99999;pointer-events:none;color:red;';
+							heart.innerText = '♥';
+							document.body.appendChild(heart);
+							setTimeout(() => heart.remove(), 1500);
+						}
+					} else if (idx === 3) {
+						// D：变字
+						div.innerText = "只能看着我";
+					}
+					return;
+				}
+
+				// ===== 第21题 =====
+				if (current === 20) {
+					if (idx === 0) {
+						// A：消息提示虚影+红字 - 仿手机顶部通知
+						showRedTip('你是想独处陪我吗？^^', 2500);
+						const ghost = document.createElement('div');
+						ghost.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:rgba(200,0,0,0.15);color:rgba(200,0,0,0.6);font-size:12px;padding:6px 16px;border-radius:20px;pointer-events:none;z-index:9000;white-space:nowrap;';
+						ghost.innerText = '[1条新消息]';
+						document.body.appendChild(ghost);
+						setTimeout(() => ghost.remove(), 1500);
+					} else if (idx === 3) {
+						// D：锁死
+						lockOptionTemporary(div, '你要一直陪着我，不许忙', 2000, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+				// ===== 第22题 =====
+				if (current === 21) {
+					if (idx === 0) {
+						showRedTip('我在角落里哦', 2000);
+					} else if (idx === 2) {
+						showRedTip('你不怕我吗？', 2000);
+					} else if (idx === 3) {
+						flashPage('rgba(0,0,0,0.7)', 500);
+						showRedTip('我会一直待在你身边的角落', 2500);
+					}
+					return;
+				}
+
+				// ===== 第23题 =====
+				if (current === 22) {
+					const q21s = q21Sel();
+					if (idx === 0) {
+						showRedTip('我在找你哦', 2000);
+					} else if (idx === 2) {
+						showRedTip('我会找到你的，别想躲', 2500);
+					} else if (idx === 3) {
+						// D：爱心+触发占有结局标记
+						const heart = document.createElement('div');
+						heart.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;z-index:99999;pointer-events:none;color:red;';
+						heart.innerText = '♥';
+						document.body.appendChild(heart);
+						setTimeout(() => heart.remove(), 1500);
+					}
+					return;
+				}
+
+				// ===== 第24题 =====
+				if (current === 23) {
+					if (idx === 0) {
+						// 数码闪烁特效（模糊+噪点）
+						const glitchOverlay = document.createElement('div');
+						glitchOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:8888;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);';
+						document.body.appendChild(glitchOverlay);
+						let glitchTimer = null;
+						const doGlitch = () => {
+							const h = window.innerHeight;
+							const y = Math.random() * h;
+							const slice = document.createElement('div');
+							slice.style.cssText = `position:absolute;left:0;top:${y}px;width:100%;height:${2+Math.random()*8}px;background:rgba(0,200,255,0.06);transform:translateX(${(Math.random()-0.5)*12}px);`;
+							glitchOverlay.appendChild(slice);
+							setTimeout(() => slice.remove(), 100);
+						};
+						glitchTimer = setInterval(doGlitch, 100);
+						setTimeout(() => { clearInterval(glitchTimer); glitchOverlay.remove(); }, 3000);
+						showRedTip('分不清就留在我身边吧', 2500);
+					} else if (idx === 2) {
+						showRedTip('我会让你混乱的', 2000);
+					} else if (idx === 3) {
+						// 页面扭曲 + 数码错位
+						let skewTimer = null;
+						let lastSkew = 0;
+						skewTimer = setInterval(() => {
+							const skew = (Math.random() - 0.5) * 3;
+							document.body.style.transform = `skewX(${skew}deg)`;
+							lastSkew++;
+							if (lastSkew > 20) { clearInterval(skewTimer); document.body.style.transform = ''; }
+						}, 80);
+						setTimeout(() => { clearInterval(skewTimer); document.body.style.transform = ''; }, 2000);
+						showRedTip('意识清醒？假的哦^^', 2500);
+					}
+					return;
+				}
+
+				// ===== 第25题 =====
+				if (current === 24) {
+					startQ25Effect();
+					return;
+				}
+
+			// ===== 第26题 =====
+			if (current === 25) {
+				if (idx === 0) {
+					if (q11SelectedD()) {
+						showRedTip('是害怕我看你的手机吗？', 2500);
+					} else {
+						showRedTip('我会看你手机哦', 2000);
+					}
+					} else if (idx === 2) {
+						showRedTip('我会看你手机哦', 2000);
+					} else if (idx === 3) {
+						// D：锁死
+						lockOptionTemporary(div, '不许乱丢，我要找到你的手机', 2000, () => {
+							answers[current] = null;
+							div.classList.remove('selected');
+						});
+						return;
+					}
+					return;
+				}
+
+				// ===== 第27题 =====
+				if (current === 26) {
+					if (idx === 0) {
+						// A：变暗模拟密闭
+						darkenPage(3000);
+						showRedTip('我陪你一起待在这里', 2500);
+					} else if (idx === 2) {
+						showRedTip('你真勇敢', 1500);
+					} else if (idx === 3) {
+						flashPage('rgba(0,0,0,0.9)', 1000);
+						showRedTip('我们永远待在狭小空间里吧', 2500);
+					}
+					return;
+				}
+
+				// ===== 第28题 =====
+				if (current === 27) {
+					const q16s = q16Sel();
+					if (idx === 0) {
+						if (q16s === 0 || q16s === 1) {
+							showRedTip('我就要打探你，喜欢你', 2500);
+							shakeBody();
+						} else {
+							showRedTip('我就要打探你，喜欢你', 2000);
+						}
+					} else if (idx === 1) {
+						// B：红字
+						showRedTip('好伤心TT', 2000);
+					} else if (idx === 2) {
+						showRedTip('真乖，我会一直关注你', 2000);
+					} else if (idx === 3) {
+						const heart = document.createElement('div');
+						heart.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;z-index:99999;pointer-events:none;color:red;';
+						heart.innerText = '♥';
+						document.body.appendChild(heart);
+						setTimeout(() => heart.remove(), 1500);
+					}
+					return;
+				}
+
+				// ===== 第29题 =====
+				if (current === 28) {
+					if (idx === 0) {
+						flashPage('rgba(200,0,0,0.06)', 800);
+						setTimeout(() => flashPage('rgba(200,0,0,0.06)', 600), 900);
+						showRedTip('是我在哦^^', 2000);
+					} else if (idx === 2) {
+						showRedTip('你真迟钝，我一直在你身边', 2500);
+					} else if (idx === 3) {
+						flashPage('rgba(255,0,0,0.4)', 400);
+						showRedTip('我会让你感觉到我的', 2500);
+					}
+					return;
+				}
+
+				// ===== 第30题 =====
+				if (current === 29) {
+					if (idx === 0) {
+						// A：黑屏惩罚2秒+"你害怕也没用"
+						const bs = document.createElement('div');
+						bs.className = 'black-screen';
+						bs.innerHTML = '<div>你害怕也没用</div>';
+						document.body.appendChild(bs);
+						setTimeout(() => bs.remove(), 2000);
+					} else if (idx === 2) {
+						// C：爱心图标
+						const heart = document.createElement('div');
+						heart.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;z-index:99999;pointer-events:none;color:red;';
+						heart.innerText = '♥';
+						document.body.appendChild(heart);
+						setTimeout(() => heart.remove(), 1500);
+					} else if (idx === 3) {
+						// D：满屏爱心 - 居中布局
+						const heartPositions = [
+							{top: 25, left: 20}, {top: 25, left: 80},
+							{top: 40, left: 35}, {top: 40, left: 65},
+							{top: 55, left: 15}, {top: 55, left: 85},
+							{top: 70, left: 40}, {top: 70, left: 60}
+						];
+						heartPositions.forEach((pos, i) => {
+							setTimeout(() => {
+								const h = document.createElement('div');
+								h.style.cssText = `position:fixed;top:${pos.top}%;left:${pos.left}%;transform:translate(-50%,-50%);font-size:${30+Math.random()*40}px;z-index:99999;pointer-events:none;color:red;`;
+								h.innerText = '♥';
+								document.body.appendChild(h);
+								setTimeout(() => h.remove(), 1500);
+							}, i * 150);
+						});
+					}
+					return;
+				}
+			}
+
+			prevBtn.onclick = () => {
+				clearAllEffects();
+				if (current > 0) {
+					current--;
+					renderQuestion();
+				}
+			};
+			nextBtn.onclick = () => {
+				clearAllEffects();
+				// 未选择时显示抖动弹窗
+				if (answers[current] === null) {
+					showRefuseShake();
+					return;
+				}
+				if (current === 3) fromQ4ToQ5 = true;
+				if (current < total - 1) {
+					current++;
+					renderQuestion();
+				} else {
+					showFinalModal();
+				}
+			};
+
+			openStartModal();
+		</script>
+		<audio id="bgm" src="bgm.m4a" loop preload="auto"></audio>
+		<script>
+		let bgm = document.getElementById('bgm');
+		bgm.muted = true;
+		bgm.play().catch(() => {});
+		let bgmUnlocked = false;
+		function openBgm() {
+		    if (bgmUnlocked) return;
+		    bgmUnlocked = true;
+		    bgm.muted = false;
+		    // BGM分支：第3题选D→0.8，选A/C→0.6（默认）
+		    // 此时第3题可能还没选，先用0.6，后续在第3题选择时再调
+		    bgm.volume = 0.6;
+		    bgm.play();
+		    document.removeEventListener('click', openBgm);
+		    document.removeEventListener('touchstart', openBgm);
+		}
+		document.addEventListener('click', openBgm);
+		document.addEventListener('touchstart', openBgm);
+		</script>
+	</body>
+</html>

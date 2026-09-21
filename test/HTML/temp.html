@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>体锻打卡后台管理系统</title>
+    
+    <!-- 外部依赖 -->
+    <script src="./体锻打卡后台管理系统_files/layui.js.下载"></script>
+    <script src="./体锻打卡后台管理系统_files/jquery-3.5.0.min.js.下载"></script>
+    <script src="./体锻打卡后台管理系统_files/page-login.js.下载"></script>
+    <link rel="stylesheet" href="./体锻打卡后台管理系统_files/layui.css">
+    <link rel="stylesheet" href="./体锻打卡后台管理系统_files/iconfont.css">
+    
+    <style>
+        /* ========== 全局重置 ========== */
+        * {
+            -webkit-user-select: text !important;
+            -khtml-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+        
+        body {
+            margin: 0;
+        }
+        
+        /* ========== 表单样式 ========== */
+        .form-horizontal {
+            padding-bottom: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 28px #444;
+            -moz-box-shadow: 0 0 10px #989898;
+            -webkit-box-shadow: 0 0 10px #989898;
+        }
+        
+        .form-horizontal .heading {
+            display: block;
+            font-size: 35px;
+            font-weight: 700;
+            padding: 35px 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 30px;
+        }
+        
+        .form-horizontal label {
+            margin-left: 25px;
+        }
+        
+        .form-horizontal .layui-input-inline {
+            width: 300px;
+        }
+        
+        .span-heading-div {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        
+        .layui-form-pane .layui-form-label {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            background-color: #ffffff;
+            width: 50px;
+        }
+        
+        .layui-form-pane .layui-input {
+            border-left: none;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .forget-password-a {
+            margin-right: 25px;
+            float: right;
+            color: blue;
+        }
+        
+        /* ========== 布局样式 ========== */
+        .wholeLayout {
+            background: url(img/bg.png) no-repeat;
+            filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+            background-size: 100% 100%;
+            height: 698px;
+        }
+        
+        h2 {
+            font-weight: bold;
+            font-size: 35px;
+        }
+        
+        .introduction {
+            font-weight: 500;
+            font-size: 20px;
+        }
+        
+        .loginLayout {
+            background-color: white;
+            width: 330px;
+            height: 285px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            border: 1px solid #dee8ec;
+        }
+        
+        .iconPosition {
+            position: relative;
+            top: 28px;
+            left: 10px;
+            width: 10px;
+        }
+        
+        .layui-form-override-item {
+            width: 280px;
+            margin-left: 23px;
+        }
+        
+        .layui-override-btn {
+            border-radius: 5px;
+            width: 280px;
+            background-color: #29b89f;
+        }
+        
+        .layui-override-input {
+            background-color: #f8faf9 !important;
+        }
+        
+        .loginTitle {
+            font-size: 20px !important;
+            font-weight: bold;
+            color: black !important;
+            letter-spacing: 10px;
+            border-bottom: 3px solid #29b89f;
+        }
+        
+        input:-webkit-autofill {
+            box-shadow: 0 0 0px 1000px #f8faf9 inset !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="wholeLayout">
+        <div class="layui-row">
+            <!-- 左侧：品牌介绍区域 -->
+            <div class="layui-col-md5 layui-col-md-offset2" style="margin-top: 63px;">
+                <h2 style="font-size: 50px;">体锻打卡</h2>
+                <div style="margin-left: 210px; margin-top: -23px;">
+                    <span style="font-size: 20px; font-weight: bold;">管理平台</span>
+                </div>
+                <br>
+                <span class="introduction">AI人脸识别——智慧校园身份辩识</span>
+            </div>
+            
+            <!-- 右侧：登录表单区域 -->
+            <div class="layui-col-md3 layui-col-md-offset1" style="margin-top: 150px;">
+                <div class="loginLayout">
+                    <form class="layui-form">
+                        <!-- 标签页标题 -->
+                        <div class="layui-tab layui-tab-brief">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this loginTitle">登录</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- 用户名输入框 -->
+                        <div class="layui-form-item layui-form-override-item">
+                            <div class="iconPosition">
+                                <i class="iconfont icon-yonghu"></i>
+                            </div>
+                            <input type="text" id="userName" name="userName" 
+                                   class="layui-input layui-override-input" 
+                                   lay-verify="account" autocomplete="off" 
+                                   style="padding-left: 30px;">
+                            <div>
+                                <span style="color: grey;">请输入您的用户名</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 密码输入框 -->
+                        <div class="layui-form-item layui-form-override-item" style="margin-top: -18px;">
+                            <div class="iconPosition">
+                                <i class="iconfont icon-mima"></i>
+                            </div>
+                            <input type="password" id="userPassword" name="userPassword" 
+                                   class="layui-input layui-override-input" 
+                                   lay-verify="password" autocomplete="off" maxlength="20" 
+                                   style="padding-left: 30px;">
+                            <div>
+                                <span style="color: grey;">请输入您的密码</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 登录按钮 -->
+                        <div class="layui-form-item layui-form-override-item">
+                            <button id="loginButton" type="button" 
+                                    class="layui-btn layui-override-btn btn-submit" 
+                                    lay-submit="" lay-filter="sub">
+                                立即登录
+                                <i id="loading" style="margin-left: 8px; display: none;" 
+                                   class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚区域（原备案信息已注释） -->
+    <div class="layui-layout-admin layui-footer" style="text-align: center;position: relative;left: 0;right: 0;top:25px;"></div>
+</body>
+</html>

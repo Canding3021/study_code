@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date and Time with Progress Bars</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400&display=swap");
+
+    body {
+      font-family: 'Nunito', 'Courier New', Courier, monospace;
+      font-weight: 300;
+      text-align: center;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #D0D0D0;
+      background-color: #101010;
+    }
+    .container {
+      text-align: center;
+    }
+    .datetime {
+      font-weight: bold;
+      color: #D0D0D0;
+      font-family: 'Courier New', Courier, monospace;
+      letter-spacing: 0.2em;
+      margin-bottom: 20px;
+      display: inline-block;
+      min-width: 280px;
+    }
+    .progress-container {
+      margin: 10px auto;
+      width: 80%;
+      max-width: 400px;
+    }
+    .progress-label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      text-align: left;
+    }
+    .progress-bar {
+      background-color: #303030;
+      border-radius: 10px;
+      height: 20px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      background-color: #00A000;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.1s;
+    }
+
+    /* Roller percentage style */
+    .progress-percentage {
+      text-align: right;
+      margin-top: 5px;
+      height: 24px;
+      overflow: hidden;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .roller-column {
+      display: inline-block;
+      height: 24px;
+      line-height: 24px;
+      font-size: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    .roller-column .roller-inner {
+      transition: transform 300ms ease-out;
+    }
+    .roller-column .roller-num {
+      height: 24px;
+      line-height: 24px;
+      opacity: 0.025;
+      transition: opacity 500ms;
+    }
+    .roller-column .roller-num.visible {
+      opacity: 1.0;
+      text-shadow: 0 0 6px rgba(0, 160, 0, 0.6);
+    }
+    .roller-column .roller-num.close {
+      opacity: 0.35;
+    }
+    .roller-column .roller-num.far {
+      opacity: 0.15;
+    }
+    .roller-column .roller-num.distant {
+      opacity: 0.1;
+    }
+    .roller-symbol {
+      display: inline-block;
+      height: 24px;
+      line-height: 24px;
+      font-size: 16px;
+      opacity: 1.0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p>The current date and time is:</p>
+    <p class="datetime" id="datetime"></p>
+
+    <!-- 进度条 -->
+    <div class="progress-container">
+      <div class="progress-label">Year</div>
+      <div class="progress-bar">
+        <span id="year-progress"></span>
+      </div>
+      <div class="progress-percentage" id="year-percentage"></div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">Month</div>
+      <div class="progress-bar">
+        <span id="month-progress"></span>
+      </div>
+      <div class="progress-percentage" id="month-percentage"></div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">Day</div>
+      <div class="progress-bar">
+        <span id="day-progress"></span>
+      </div>
+      <div class="progress-percentage" id="day-percentage"></div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">Hour</div>
+      <div class="progress-bar">
+        <span id="hour-progress"></span>
+      </div>
+      <div class="progress-percentage" id="hour-percentage"></div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">Minute</div>
+      <div class="progress-bar">
+        <span id="minute-progress"></span>
+      </div>
+      <div class="progress-percentage" id="minute-percentage"></div>
+    </div>
+  </div>
+
+  <script>
+// Roller class priority: visible > close > far > distant
+var classList = ['visible', 'close', 'far', 'distant'];
+
+function getClass(n, i) {
+  var diff = Math.abs(n - i);
+  if (diff === 0) return 'visible';
+  if (diff === 1) return 'close';
+  if (diff === 2) return 'far';
+  return 'distant';
+}
+
+// Build roller HTML for a percentage string like "45.3"
+function buildRollerHTML() {
+  // Columns for digit1 (0-9), digit2 (0-9), decimal point, digit3 (0-9)
+  var html = '';
+  // digit 1: 0-9
+  html += '<div class="roller-column" data-col="0"><div class="roller-inner">';
+  for (var i = 0; i <= 9; i++) {
+    html += '<div class="roller-num">' + i + '</div>';
+  }
+  html += '</div></div>';
+  // digit 2: 0-9
+  html += '<div class="roller-column" data-col="1"><div class="roller-inner">';
+  for (var i = 0; i <= 9; i++) {
+    html += '<div class="roller-num">' + i + '</div>';
+  }
+  html += '</div></div>';
+  // decimal point
+  html += '<div class="roller-symbol">.</div>';
+  // digit 3: 0-9
+  html += '<div class="roller-column" data-col="2"><div class="roller-inner">';
+  for (var i = 0; i <= 9; i++) {
+    html += '<div class="roller-num">' + i + '</div>';
+  }
+  html += '</div></div>';
+  // percent symbol
+  html += '<div class="roller-symbol">%</div>';
+  return html;
+}
+
+// Initialize all roller containers
+var rollerIds = ['year-percentage', 'month-percentage', 'day-percentage', 'hour-percentage', 'minute-percentage'];
+// Minute uses plain text (roller is too fast at 100ms refresh)
+var rollerIds = ['year-percentage', 'month-percentage', 'day-percentage', 'hour-percentage'];
+rollerIds.forEach(function(id) {
+  document.getElementById(id).innerHTML = buildRollerHTML();
+});
+
+// Update a single roller to show a value like "45.3"
+function updateRoller(containerId, value) {
+  var str = value; // e.g. "45.3"
+  var parts = str.split('.');
+  var intPart = parts[0].padStart(2, '0'); // "45"
+  var decPart = parts[1] || '0';           // "3"
+
+  var digits = [parseInt(intPart[0]), parseInt(intPart[1]), parseInt(decPart[0])];
+  var container = document.getElementById(containerId);
+  var columns = container.querySelectorAll('.roller-column');
+
+  columns.forEach(function(col, idx) {
+    var n = digits[idx];
+    var size = 24; // line height
+    var offset = -n * size;
+    col.querySelector('.roller-inner').style.transform = 'translateY(' + offset + 'px)';
+
+    var nums = col.querySelectorAll('.roller-num');
+    nums.forEach(function(numEl, i) {
+      numEl.className = 'roller-num ' + getClass(n, i);
+    });
+  });
+}
+
+function updateDateTimeAndProgress() {
+  var now = new Date();
+
+  // 获取当前日期和时间
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var day = now.getDate();
+  var hours = String(now.getHours()).padStart(2, '0');
+  var minutes = String(now.getMinutes()).padStart(2, '0');
+  var seconds = String(now.getSeconds()).padStart(2, '0');
+  // 计算每月天数
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // 日期和星期显示
+  var formattedTime = year + '/' + String(month + 1).padStart(2, '0') + '/' + String(day).padStart(2, '0') + ' ' + hours + ':' + minutes + ':' + seconds + ' (' + now.toLocaleString('en-US', { weekday: 'long' }) + ')';
+  document.getElementById('datetime').textContent = formattedTime;
+
+  // 进度条计算
+  var yearProgress = (((month + (day - 1 + now.getHours() / 24 + now.getMinutes() / 1440 + now.getSeconds() / 86400) / daysInMonth) / 12) * 100).toFixed(1);
+  var monthProgress = (((day - 1) + now.getHours() / 24 + now.getMinutes() / 1440 + now.getSeconds() / 86400) / daysInMonth * 100).toFixed(1);
+  var dayProgress = (((now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400) * 100).toFixed(1);
+  var hourProgress = (((now.getMinutes() + now.getSeconds() / 60) / 60) * 100).toFixed(1);
+  var minuteProgress = (((now.getSeconds() + now.getMilliseconds() / 1000) / 60) * 100).toFixed(1);
+
+  // 更新进度条宽度
+  document.getElementById('year-progress').style.width = yearProgress + '%';
+  document.getElementById('month-progress').style.width = monthProgress + '%';
+  document.getElementById('day-progress').style.width = dayProgress + '%';
+  document.getElementById('hour-progress').style.width = hourProgress + '%';
+  document.getElementById('minute-progress').style.width = minuteProgress + '%';
+
+  // 更新百分比（Year/Month/Day/Hour 用滚轮，Minute 用普通文字）
+  updateRoller('year-percentage', yearProgress);
+  updateRoller('month-percentage', monthProgress);
+  updateRoller('day-percentage', dayProgress);
+  updateRoller('hour-percentage', hourProgress);
+  document.getElementById('minute-percentage').textContent = minuteProgress + '%';
+}
+
+// 初始化并启动更新循环
+updateDateTimeAndProgress();
+setInterval(updateDateTimeAndProgress, 100);
+  </script>
+</body>
+</html>
