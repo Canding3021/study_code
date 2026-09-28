@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>25软件1班的课程表</title>
+<style>
+  :root{
+    --line:#000;
+    --head-bg:#f2f2f2;
+    --divider-bg:#f0f0f0;
+    --sect-bg:#fafafa;
+    --meta:#666;
+  }
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    padding:30px 24px 56px;
+    background:#fff;
+    color:#000;
+    font-family:"Microsoft YaHei","微软雅黑","PingFang SC",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{ max-width:1040px; margin:0 auto; }
+
+  h1.title{
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:.5px;
+    margin:0 0 16px;
+  }
+
+  /* ---------- 课程表 ---------- */
+  table.schedule{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    border:1.5px solid var(--line);
+  }
+  .schedule th,
+  .schedule td{
+    border:1px solid var(--line);
+    text-align:center;
+    vertical-align:middle;
+    padding:8px 6px;
+    font-size:14px;
+    line-height:1.35;
+  }
+  .schedule thead th{
+    background:var(--head-bg);
+    font-weight:700;
+  }
+
+  /* 上午 / 下午 / 晚上 竖排栏 */
+  .schedule .period{
+    background:var(--sect-bg);
+    font-weight:700;
+    letter-spacing:2px;
+  }
+
+  /* 节次 + 时间 */
+  .schedule .time{
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .schedule .time .p{
+    display:block;
+    font-size:11px;
+    font-weight:400;
+    color:#8a8a8a;
+    letter-spacing:0;
+    margin-bottom:1px;
+  }
+
+  /* 午休 / 晚饭 整行分隔带 */
+  .schedule .divider{
+    background:var(--divider-bg);
+    font-weight:700;
+    letter-spacing:2px;
+    padding:7px 6px;
+  }
+
+  /* 课程单元格 */
+  .schedule .course .c-name{
+    font-weight:600;
+    display:block;
+  }
+  .schedule .course .c-meta{
+    display:block;
+    font-size:11.5px;
+    font-weight:400;
+    color:var(--meta);
+    margin-top:3px;
+  }
+  .schedule .course .c-meta.weeks{
+    color:#8a8a8a;
+  }
+  .schedule .cont .c-name{
+    font-weight:600;
+    font-size:13px;
+  }
+  .schedule .cont .c-note{
+    display:block;
+    font-size:11px;
+    font-weight:400;
+    color:#8a8a8a;
+    margin-top:2px;
+  }
+
+  /* ---------- 第18周实训安排 ---------- */
+  h2.sub-title{
+    font-size:17px;
+    font-weight:700;
+    margin:34px 0 12px;
+    padding-left:9px;
+    border-left:4px solid #000;
+  }
+  table.training{
+    width:100%;
+    max-width:680px;
+    border-collapse:collapse;
+    table-layout:fixed;
+    border:1.5px solid var(--line);
+  }
+  .training th,
+  .training td{
+    border:1px solid var(--line);
+    text-align:center;
+    vertical-align:middle;
+    padding:7px 6px;
+    font-size:13.5px;
+    line-height:1.35;
+  }
+  .training thead th{ background:var(--head-bg); font-weight:700; }
+  .training td.name{ font-weight:600; }
+
+  .note{
+    margin:14px 0 0;
+    font-size:12.5px;
+    color:#777;
+    line-height:1.7;
+  }
+
+  @media print{
+    body{ padding:0; }
+    .page{ max-width:none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1 class="title">25软件1班的课程表</h1>
+
+  <table class="schedule">
+    <colgroup>
+      <col style="width:58px">
+      <col style="width:122px">
+      <col><col><col><col><col>
+    </colgroup>
+
+    <thead>
+      <tr>
+        <th colspan="2">时间/日期</th>
+        <th>周一</th>
+        <th>周二</th>
+        <th>周三</th>
+        <th>周四</th>
+        <th>周五</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- ================= 上午 第1节 ================= -->
+      <tr>
+        <td class="period" rowspan="4">上午</td>
+        <td class="time"><span class="p">第1节</span>08:10-08:55</td>
+        <td class="course" rowspan="4">
+          <span class="c-name">Python机器学习与应用</span>
+          <span class="c-meta">流-421 · 董虎胜</span>
+          <span class="c-meta weeks">1-8周</span>
+        </td>
+        <td class="course" rowspan="4">
+          <span class="c-name">Java Web开发</span>
+          <span class="c-meta">流-423 · 陆广锦、陈静</span>
+          <span class="c-meta weeks">2-17周</span>
+        </td>
+        <td class="course" rowspan="2">
+          <span class="c-name">形势与政策3</span>
+          <span class="c-meta">天-103 · 玉帅</span>
+          <span class="c-meta weeks">9-12周</span>
+        </td>
+        <td class="course" rowspan="4">
+          <span class="c-name">C#应用程序设计</span>
+          <span class="c-meta">流-421 · 程媛</span>
+          <span class="c-meta weeks">1-16周</span>
+        </td>
+        <td class="course" rowspan="4">
+          <span class="c-name">软件测试工具应用</span>
+          <span class="c-meta">流-421 · 熊志勇</span>
+          <span class="c-meta weeks">2-17周</span>
+        </td>
+      </tr>
+
+      <!-- 上午 第2节 -->
+      <tr>
+        <td class="time"><span class="p">第2节</span>09:10-09:55</td>
+      </tr>
+
+      <!-- 上午 第3节 -->
+      <tr>
+        <td class="time"><span class="p">第3节</span>10:15-11:00</td>
+        <td class="course" rowspan="2">
+          <span class="c-name">习近平新时代中国特色社会主义思想概论</span>
+          <span class="c-meta">天-203 · 张宇</span>
+          <span class="c-meta weeks">1-16周（3-5节）</span>
+        </td>
+      </tr>
+
+      <!-- 上午 第4节 -->
+      <tr>
+        <td class="time"><span class="p">第4节</span>11:10-11:55</td>
+      </tr>
+
+      <!-- ================= 午休 ================= -->
+      <tr>
+        <td class="divider" colspan="7">午休</td>
+      </tr>
+
+      <!-- ================= 下午 第5节 ================= -->
+      <tr>
+        <td class="period" rowspan="4">下午</td>
+        <td class="time"><span class="p">第5节</span>13:30-14:15</td>
+        <td class="course"></td>
+        <td class="course"></td>
+        <td class="cont">
+          <span class="c-name">习近平新时代中国特色<br>社会主义思想概论</span>
+          <span class="c-note">（续 · 第5节）</span>
+        </td>
+        <td class="course"></td>
+        <td class="course"></td>
+      </tr>
+
+      <!-- 下午 第6节 -->
+      <tr>
+        <td class="time"><span class="p">第6节</span>14:25-15:10</td>
+        <td class="course" rowspan="3">
+          <span class="c-name">Web系统UI设计</span>
+          <span class="c-meta">流-410 · 王勤宏</span>
+          <span class="c-meta weeks">1-16周（6-9节）</span>
+        </td>
+        <td class="course" rowspan="2">
+          <span class="c-name">体育</span>
+          <span class="c-meta">归-417 · 李继鑫</span>
+          <span class="c-meta weeks">1-14周</span>
+        </td>
+        <td class="course"></td>
+        <td class="course" rowspan="2">
+          <span class="c-name">国家安全教育</span>
+          <span class="c-meta">天-102 · 张宇</span>
+          <span class="c-meta weeks">1-8周</span>
+        </td>
+        <td class="course"></td>
+      </tr>
+
+      <!-- 下午 第7节 -->
+      <tr>
+        <td class="time"><span class="p">第7节</span>15:30-16:15</td>
+        <td class="course"></td>
+        <td class="course"></td>
+      </tr>
+
+      <!-- 下午 第8节 -->
+      <tr>
+        <td class="time"><span class="p">第8节</span>16:25-17:10</td>
+        <td class="course">
+          <span class="c-name">实用软件工程与UML</span>
+          <span class="c-meta">流-423 · 王芳</span>
+          <span class="c-meta weeks">1-16周（8-10节）</span>
+        </td>
+        <td class="course"></td>
+        <td class="course"></td>
+      </tr>
+
+      <!-- ================= 晚饭 ================= -->
+      <tr>
+        <td class="divider" colspan="7">晚饭</td>
+      </tr>
+
+      <!-- ================= 晚上 第9节 ================= -->
+      <tr>
+        <td class="period" rowspan="2">晚上</td>
+        <td class="time"><span class="p">第9节</span>18:30-19:15</td>
+        <td class="cont">
+          <span class="c-name">Web系统UI设计</span>
+          <span class="c-note">（续 · 第9节）</span>
+        </td>
+        <td class="cont" rowspan="2">
+          <span class="c-name">实用软件工程与UML</span>
+          <span class="c-note">（续 · 第9-10节）</span>
+        </td>
+        <td class="course"></td>
+        <td class="course"></td>
+        <td class="course"></td>
+      </tr>
+
+      <!-- 晚上 第10节 -->
+      <tr>
+        <td class="time"><span class="p">第10节</span>19:30-20:15</td>
+        <td class="course"></td>
+        <td class="course"></td>
+        <td class="course"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 class="sub-title">第18周实训安排</h2>
+
+  <table class="training">
+    <colgroup>
+      <col style="width:90px">
+      <col style="width:110px">
+      <col>
+      <col style="width:110px">
+      <col style="width:130px">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>星期</th>
+        <th>节次</th>
+        <th>课程名称</th>
+        <th>教室</th>
+        <th>教师</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>周一</td>
+        <td>第1-10节</td>
+        <td class="name">C#程序设计项目实训</td>
+        <td>流-421</td>
+        <td>李爱军、王芳</td>
+      </tr>
+      <tr>
+        <td>周三</td>
+        <td>第1-10节</td>
+        <td class="name">C#程序设计项目实训</td>
+        <td>流-421</td>
+        <td>李爱军、王芳</td>
+      </tr>
+      <tr>
+        <td>周五</td>
+        <td>第1-4节</td>
+        <td class="name">C#程序设计项目实训</td>
+        <td>流-421</td>
+        <td>李爱军、王芳</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="note">
+    ※ 上表为第 1-17 周常规课程；<strong>第18周</strong>的《C#程序设计项目实训》为整周实训，与常规课程时间重叠，单列于上方小表。<br>
+    ※ 周二《体育》第1-13周与第14周连续上课，合并记为 1-14 周。<br>
+    ※ 跨午休 / 晚饭的课程（习近平新时代…概论 3-5节、Web系统UI设计 6-9节、实用软件工程与UML 8-10节）以「（续）」标示下半段。
+  </p>
+
+</div>
+</body>
+</html>
