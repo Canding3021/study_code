@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面未找到</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url("../image/404/bg.png") repeat;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            color: #555;
+            text-align: center;
+        }
+
+        .header {
+            background-color: #383838;
+            color: #fffa00;
+            font-size: 36px;
+            letter-spacing: 8px;
+            line-height: 2.5;
+            text-align: center;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 90px);
+            padding: 40px 20px;
+        }
+        .content img {
+            width: 360px;
+            max-width: 80%;
+            margin-bottom: 30px;
+        }
+        .content p {
+            font-size: 18px;
+            line-height: 2;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .content p .highlight {
+            color: #d9534f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">250322226李哲煜 </div>
+
+    <div class="content">
+        <img src="../image/404/error-img.png" alt="404 Not Found">
+        <p>
+            抱歉，您访问的页面<span class="highlight">不存在</span>或已被删除。<br>
+            请检查网址是否正确，或点击下方链接返回首页。
+        </p>
+    </div>
+</body>
+</html>
