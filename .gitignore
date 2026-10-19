@@ -3,6 +3,7 @@
 *.o
 *.class
 *.jpg
+*.png
 bin/
 obj/
 Debug/
