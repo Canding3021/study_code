@@ -4,6 +4,8 @@
 *.class
 *.jpg
 *.png
+*.jpge
+*.gif
 bin/
 obj/
 Debug/
