@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEA &amp; MEAL - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            background-color: #e9e5d8;
+            color: #333;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        ul { list-style: none; }
+        a { text-decoration: none; color: #333; }
+        html { scroll-behavior: smooth; }
+        .wrapper {
+            width: 1000px;
+            margin: 25px auto;
+            background-color: #fff;
+            border: 1px solid #cfc9b4;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 头部 */
+        .header {
+            height: 175px;
+            position: relative;
+            background: #fff url("../image/demo01/templatemo_header.jpg") no-repeat right bottom;
+        }
+        .header .logo {
+            position: absolute;
+            left: 30px;
+            top: 60px;
+            width: 325px;
+            height: 55px;
+        }
+        /* 导航 */
+        .nav {
+            height: 44px;
+            background-color: #4d5d27;
+            border-top: 2px solid #222;
+            border-bottom: 2px solid #222;
+        }
+        .nav ul {
+            display: flex;
+            padding-left: 20px;
+            height: 100%;
+        }
+        .nav li {
+            line-height: 40px;
+        }
+        .nav a {
+            display: block;
+            padding: 0 25px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            height: 100%;
+            transition: background-color 0.2s;
+        }
+        .nav a:hover, .nav a.active {
+            background-color: #2b3315;
+            background-image: url("../image/demo01/templatemo_menu_hover_left.jpg"),
+                              url("../image/demo01/templatemo_menu_hover_right.jpg");
+            background-repeat: no-repeat, no-repeat;
+            background-position: left center, right center;
+            background-size: auto 100%, auto 100%;
+        }
+
+        .main-content {
+            padding: 30px 30px 5px;
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #999;
+        }
+        .product-list {
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        .product-item {
+            float: left;
+            width: 22%;
+            margin-right: 3.8%;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .product-item:last-child {
+            margin-right: 0;
+        }
+        .product-item:hover {
+            border-color: #8b9a46;
+            box-shadow: 0 3px 10px rgba(77, 93, 39, 0.15);
+        }
+        .product-img {
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .product-item h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #000;
+        }
+        .product-item p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            height: 80px;
+            overflow: hidden;
+        }
+        .read-more {
+            color: #8b9a46;
+            font-weight: bold;
+        }
+        .read-more:hover {
+            text-decoration: underline;
+        }
+        /* 页脚 */
+        .footer {
+            background-color: #4d5d27;
+            color: #e6e9dd;
+            padding: 18px 0;
+            text-align: center;
+        }
+        .footer a {
+            color: #e6e9dd;
+            margin: 0 8px;
+        }
+        .footer a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .footer .copyright {
+            color: #b9c19c;
+            margin-top: 6px;
+        }
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper" id="top">
+    <div class="header">
+        <img class="logo" src="../image/demo01/templatemo_logo.jpg" alt="TEA &amp; MEAL">
+    </div>
+    <div class="nav">
+        <ul>
+            <li><a href="#top" class="active">首页</a></li>
+            <li><a href="#">茶叶</a></li>
+            <li><a href="#">餐具</a></li>
+            <li><a href="#products">美食</a></li>
+            <li><a href="#about">公司</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </div>
+    <div class="main-content" id="products">
+        <h2 class="section-title">推荐套餐</h2>
+
+        <div class="product-list clearfix">
+            <div class="product-item">
+                <div class="product-img">
+                    <img src="../image/demo01/templatemo_image_01.jpg" alt="西湖牛肉">
+                </div>
+                <h3>西湖牛肉</h3>
+                <p>它香淳润滑、鲜美可口，常会提前上席作为润喉开胃的羹汤。西湖牛肉羹也是深受普通老百姓喜爱的食品。</p>
+                <a href="#" class="read-more">Read more...</a>
+            </div>
+            <div class="product-item">
+                <div class="product-img">
+                    <img src="../image/demo01/templatemo_image_02.jpg" alt="紫菜包饭">
+                </div>
+                <h3>紫菜包饭</h3>
+                <p>紫菜包饭是一道十分常见的韩式料理，与日本料理中的寿司十分相似。</p>
+                <a href="#" class="read-more">Read more...</a>
+            </div>
+            <!-- 套餐3 -->
+            <div class="product-item">
+                <div class="product-img">
+                    <img src="../image/demo01/templatemo_image_03.jpg" alt="绿晶汤菜">
+                </div>
+                <h3>绿晶汤菜</h3>
+                <p>汤菜，就是指带有较多汤汁的菜肴。汤菜，一般而言，菜是多于汤的，或汤菜各半，或汤略多于菜。</p>
+                <a href="#" class="read-more">Read more...</a>
+            </div>
+            <!-- 套餐4 -->
+            <div class="product-item">
+                <div class="product-img">
+                    <img src="../image/demo01/templatemo_image_04.jpg" alt="肘花">
+                </div>
+                <h3>肘花</h3>
+                <p>其皮厚、筋多、胶质重、瘦肉多，常带皮烹制，肥而不腻。</p>
+                <a href="#" class="read-more">Read more...</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer" id="contact">
+        <p class="copyright">Copyright © 2026 wuyuze | Designed by <span>Canding3021</span></p>
+    </div>
+</div>
+</body>
+</html>

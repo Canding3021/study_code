@@ -1,227 +1,276 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEA &amp; MEAL - 首页</title>
+    <title>demo02</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: Arial, "Microsoft YaHei", sans-serif;
-            background-color: #e9e5d8;
-            color: #333;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-        ul { list-style: none; }
-        a { text-decoration: none; color: #333; }
-        html { scroll-behavior: smooth; }
-        .wrapper {
-            width: 1000px;
-            margin: 25px auto;
-            background-color: #fff;
-            border: 1px solid #cfc9b4;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        /* 头部 */
-        .header {
-            height: 175px;
-            position: relative;
-            background: #fff url("../image/demo01/templatemo_header.jpg") no-repeat right bottom;
-        }
-        .header .logo {
-            position: absolute;
-            left: 30px;
-            top: 60px;
-            width: 325px;
-            height: 55px;
-        }
-        /* 导航 */
-        .nav {
-            height: 44px;
-            background-color: #4d5d27;
-            border-top: 2px solid #222;
-            border-bottom: 2px solid #222;
-        }
-        .nav ul {
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('../image/demo02/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
-            padding-left: 20px;
-            height: 100%;
-        }
-        .nav li {
-            line-height: 40px;
-        }
-        .nav a {
-            display: block;
-            padding: 0 25px;
-            color: #fff;
-            font-weight: bold;
-            font-size: 14px;
-            height: 100%;
-            transition: background-color 0.2s;
-        }
-        .nav a:hover, .nav a.active {
-            background-color: #2b3315;
-            background-image: url("../image/demo01/templatemo_menu_hover_left.jpg"),
-                              url("../image/demo01/templatemo_menu_hover_right.jpg");
-            background-repeat: no-repeat, no-repeat;
-            background-position: left center, right center;
-            background-size: auto 100%, auto 100%;
+            flex-direction: column;
+            /* 全局字体栈：英文 Times New Roman，中文仿宋（FangSong） */
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
         }
 
+        /* 主内容区 */
         .main-content {
-            padding: 30px 30px 5px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #222;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #999;
+
+        /* 顶部文字显示框 */
+        .top-spacer {
+            height: 20vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .product-list {
-            overflow: hidden;
-            margin-bottom: 25px;
-        }
-        .product-item {
-            float: left;
-            width: 22%;
-            margin-right: 3.8%;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            padding: 10px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .product-item:last-child {
-            margin-right: 0;
-        }
-        .product-item:hover {
-            border-color: #8b9a46;
-            box-shadow: 0 3px 10px rgba(77, 93, 39, 0.15);
-        }
-        .product-img {
-            width: 100%;
-            height: 120px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-        }
-        .product-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .product-item h3 {
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: #000;
-        }
-        .product-item p {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 10px;
-            height: 80px;
-            overflow: hidden;
-        }
-        .read-more {
-            color: #8b9a46;
-            font-weight: bold;
-        }
-        .read-more:hover {
-            text-decoration: underline;
-        }
-        /* 页脚 */
-        .footer {
-            background-color: #4d5d27;
-            color: #e6e9dd;
-            padding: 18px 0;
+
+        .top-text {
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+            font-size: 2rem;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
             text-align: center;
         }
-        .footer a {
-            color: #e6e9dd;
-            margin: 0 8px;
+
+        /* 三列容器 */
+        .box-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5vw;
+            padding: 0 2vw;
+            height: 65vh;
         }
-        .footer a:hover {
-            color: #fff;
-            text-decoration: underline;
+
+        .box {
+            flex: 1;
+            max-width: 25vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.8rem;
         }
-        .footer .copyright {
-            color: #b9c19c;
-            margin-top: 6px;
+
+        .icon-wrap {
+            width: 100%;
+            height: 30vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .clearfix::after {
-            content: "";
-            display: table;
-            clear: both;
+
+        .icon-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+            will-change: transform;
+        }
+
+        .icon-wrap img:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* 按钮 */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            background: transparent;
+            border: 2px solid #fffff0;
+            border-radius: 60px;
+            padding: 0.65rem 1.2rem;
+            color: #fffff0;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 240px;
+            position: relative;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+            overflow: visible;
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+        }
+
+        .btn-text {
+            flex: 1;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-arrow {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
+            transition: transform 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-btn:hover .btn-arrow {
+            transform: translateX(10px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 60px;
+            padding: 2px;
+            background: linear-gradient(135deg, #fffff0 0%, #38507F 100%);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .action-btn:hover {
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 80, 127, 0.35);
+        }
+
+        .action-btn:hover::before {
+            opacity: 1;
+        }
+
+        /* 页脚署名 */
+        .footer {
+            text-align: center;
+            padding: 1.2rem 1rem 1.5rem;
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+            font-size: 0.95rem;
+            color: #ffffff;
+            letter-spacing: 0.6px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+            opacity: 0.9;
+        }
+
+        /* 移动端微调 */
+        @media (max-width: 600px) {
+            .top-text {
+                font-size: 1.4rem;
+                padding: 0 1rem;
+            }
+            .box-row {
+                gap: 3vw;
+                padding: 0 1vw;
+                height: 60vh;
+            }
+            .icon-wrap {
+                height: 26vh;
+            }
+            .action-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.9rem;
+                gap: 0.6rem;
+            }
+            .btn-arrow {
+                width: 16px;
+                height: 16px;
+            }
+            .footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="main-content">
+        <div class="top-spacer">
+            <div class="top-text" id="topText"></div>
+        </div>
 
-<div class="wrapper" id="top">
-    <div class="header">
-        <img class="logo" src="../image/demo01/templatemo_logo.jpg" alt="TEA &amp; MEAL">
-    </div>
-    <div class="nav">
-        <ul>
-            <li><a href="#top" class="active">首页</a></li>
-            <li><a href="#">茶叶</a></li>
-            <li><a href="#">餐具</a></li>
-            <li><a href="#products">美食</a></li>
-            <li><a href="#about">公司</a></li>
-            <li><a href="#contact">联系</a></li>
-        </ul>
-    </div>
-    <div class="main-content" id="products">
-        <h2 class="section-title">推荐套餐</h2>
+        <div class="box-row">
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/map.png" alt="map" data-text="探索地图，发现未知的角落">
+                </div>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">map</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
+            </div>
 
-        <div class="product-list clearfix">
-            <div class="product-item">
-                <div class="product-img">
-                    <img src="../image/demo01/templatemo_image_01.jpg" alt="西湖牛肉">
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/movie.png" alt="movie" data-text="光影之间，感受电影的魅力">
                 </div>
-                <h3>西湖牛肉</h3>
-                <p>它香淳润滑、鲜美可口，常会提前上席作为润喉开胃的羹汤。西湖牛肉羹也是深受普通老百姓喜爱的食品。</p>
-                <a href="#" class="read-more">Read more...</a>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">movie</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
             </div>
-            <div class="product-item">
-                <div class="product-img">
-                    <img src="../image/demo01/templatemo_image_02.jpg" alt="紫菜包饭">
+
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/plan.png" alt="plan" data-text="规划未来，每一步都算数">
                 </div>
-                <h3>紫菜包饭</h3>
-                <p>紫菜包饭是一道十分常见的韩式料理，与日本料理中的寿司十分相似。</p>
-                <a href="#" class="read-more">Read more...</a>
-            </div>
-            <!-- 套餐3 -->
-            <div class="product-item">
-                <div class="product-img">
-                    <img src="../image/demo01/templatemo_image_03.jpg" alt="绿晶汤菜">
-                </div>
-                <h3>绿晶汤菜</h3>
-                <p>汤菜，就是指带有较多汤汁的菜肴。汤菜，一般而言，菜是多于汤的，或汤菜各半，或汤略多于菜。</p>
-                <a href="#" class="read-more">Read more...</a>
-            </div>
-            <!-- 套餐4 -->
-            <div class="product-item">
-                <div class="product-img">
-                    <img src="../image/demo01/templatemo_image_04.jpg" alt="肘花">
-                </div>
-                <h3>肘花</h3>
-                <p>其皮厚、筋多、胶质重、瘦肉多，常带皮烹制，肥而不腻。</p>
-                <a href="#" class="read-more">Read more...</a>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">plan</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
             </div>
         </div>
     </div>
-    <div class="footer" id="contact">
-        <p class="copyright">Copyright © 2026 wuyuze | Designed by <span>Canding3021</span></p>
-    </div>
-</div>
+
+    <footer class="footer">
+        Myfuckingbrain©2026 | 2026.11.2
+    </footer>
+
+    <script>
+        (function() {
+            const topText = document.getElementById('topText');
+            const icons = document.querySelectorAll('.icon-wrap img');
+
+            icons.forEach(icon => {
+                icon.addEventListener('mouseenter', () => {
+                    const text = icon.dataset.text || '';
+                    topText.textContent = text;
+                    topText.style.opacity = '1';
+                    topText.style.transform = 'translateY(0)';
+                });
+
+                icon.addEventListener('mouseleave', () => {
+                    topText.style.opacity = '0';
+                    topText.style.transform = 'translateY(6px)';
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
