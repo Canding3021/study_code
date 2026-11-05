@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo02</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('../image/demo02/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            /* 全局字体栈：英文 Times New Roman，中文仿宋（FangSong） */
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部文字显示框 */
+        .top-spacer {
+            height: 20vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-text {
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+            font-size: 2rem;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        /* 三列容器 */
+        .box-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5vw;
+            padding: 0 2vw;
+            height: 65vh;
+        }
+
+        .box {
+            flex: 1;
+            max-width: 25vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.8rem;
+        }
+
+        .icon-wrap {
+            width: 100%;
+            height: 30vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+            will-change: transform;
+        }
+
+        .icon-wrap img:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* 按钮 */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            background: transparent;
+            border: 2px solid #fffff0;
+            border-radius: 60px;
+            padding: 0.65rem 1.2rem;
+            color: #fffff0;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 240px;
+            position: relative;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+            overflow: visible;
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+        }
+
+        .btn-text {
+            flex: 1;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-arrow {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
+            transition: transform 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-btn:hover .btn-arrow {
+            transform: translateX(10px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 60px;
+            padding: 2px;
+            background: linear-gradient(135deg, #fffff0 0%, #38507F 100%);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .action-btn:hover {
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 80, 127, 0.35);
+        }
+
+        .action-btn:hover::before {
+            opacity: 1;
+        }
+
+        /* 页脚署名 */
+        .footer {
+            text-align: center;
+            padding: 1.2rem 1rem 1.5rem;
+            font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+            font-size: 0.95rem;
+            color: #ffffff;
+            letter-spacing: 0.6px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+            opacity: 0.9;
+        }
+
+        /* 移动端微调 */
+        @media (max-width: 600px) {
+            .top-text {
+                font-size: 1.4rem;
+                padding: 0 1rem;
+            }
+            .box-row {
+                gap: 3vw;
+                padding: 0 1vw;
+                height: 60vh;
+            }
+            .icon-wrap {
+                height: 26vh;
+            }
+            .action-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.9rem;
+                gap: 0.6rem;
+            }
+            .btn-arrow {
+                width: 16px;
+                height: 16px;
+            }
+            .footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="top-spacer">
+            <div class="top-text" id="topText"></div>
+        </div>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/map.png" alt="map" data-text="探索地图，发现未知的角落">
+                </div>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">map</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
+            </div>
+
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/movie.png" alt="movie" data-text="光影之间，感受电影的魅力">
+                </div>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">movie</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
+            </div>
+
+            <div class="box">
+                <div class="icon-wrap">
+                    <img src="../image/demo02/plan.png" alt="plan" data-text="规划未来，每一步都算数">
+                </div>
+                <button class="action-btn" type="button">
+                    <span class="btn-text">plan</span>
+                    <img class="btn-arrow" src="../image/demo02/right_arrow.png" alt="arrow">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Myfuckingbrain©2026 | 2026.11.2
+    </footer>
+
+    <script>
+        (function() {
+            const topText = document.getElementById('topText');
+            const icons = document.querySelectorAll('.icon-wrap img');
+
+            icons.forEach(icon => {
+                icon.addEventListener('mouseenter', () => {
+                    const text = icon.dataset.text || '';
+                    topText.textContent = text;
+                    topText.style.opacity = '1';
+                    topText.style.transform = 'translateY(0)';
+                });
+
+                icon.addEventListener('mouseleave', () => {
+                    topText.style.opacity = '0';
+                    topText.style.transform = 'translateY(6px)';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
