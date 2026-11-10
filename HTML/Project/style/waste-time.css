@@ -1,0 +1,378 @@
+/* ==========================================================
+   浪费时间：index 入口面板 + 翻牌倒计时页
+   ========================================================== */
+
+/* ---------- 翻牌卡片色板 ---------- */
+/* 翻牌需要不透明底色，否则四层叠在一起会互相透出 */
+:root{
+    --flip-top: #24242e;
+    --flip-bottom: #1c1c24;
+    --flip-seam: rgba(0, 0, 0, 0.55);
+    --flip-shadow: rgba(0, 0, 0, 0.4);
+    --overlay-bg: rgba(22, 22, 29, 0.86);
+}
+html[data-theme="light"]{
+    --flip-top: #f4f3eb;
+    --flip-bottom: #e8e7de;
+    --flip-seam: rgba(22, 22, 29, 0.16);
+    --flip-shadow: rgba(22, 22, 29, 0.18);
+    --overlay-bg: rgba(255, 254, 248, 0.88);
+}
+
+/* ---------- 通用工具 ---------- */
+.sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================
+   index：浪费时间面板
+   ========================================================== */
+.waste-main{
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+}
+.waste-panel{
+    position: relative;
+    box-sizing: border-box;
+    width: min(46rem, 100%);
+    padding: 3rem clamp(1.5rem, 4vw, 4rem);
+    border: 1px solid var(--surface-hover);
+    border-radius: 1.5rem;
+    background-color: var(--surface);
+    text-align: center;
+    overflow: hidden;
+}
+/* 两侧装饰图标（纯装饰，id 留给读屏跳过） */
+.waste-deco{
+    position: absolute;
+    width: 7rem;
+    height: 7rem;
+    opacity: 0.12;
+    filter: var(--icon-filter);
+    pointer-events: none;
+}
+.waste-deco-left{
+    left: -1.5rem;
+    top: -1rem;
+    transform: rotate(-12deg);
+}
+.waste-deco-right{
+    right: -1.5rem;
+    bottom: -1rem;
+    transform: rotate(12deg);
+}
+.waste-panel h2{
+    margin: 0 0 0.6rem;
+    font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: normal;
+    color: var(--fg);
+}
+.waste-subtitle{
+    margin: 0 0 2rem;
+    color: var(--fg);
+    opacity: 0.7;
+}
+.preset-list{
+    position: relative;   /* 盖在装饰图标之上 */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+}
+.preset-btn{
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.4rem;
+    border: 1px solid var(--surface-hover);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--fg);
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.preset-btn:hover,
+.preset-btn:focus-visible{
+    background-color: var(--surface-hover);
+    box-shadow: 0 0 12px var(--glow);
+}
+.preset-btn:focus-visible{
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+}
+
+/* ==========================================================
+   倒计时页
+   ========================================================== */
+/* header 的 home 按钮在倒计时页是 <a>，去掉下划线 */
+.header-actions a.home-btn{
+    text-decoration: none;
+}
+
+.countdown-main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.5rem 3rem;
+}
+.countdown-eyebrow{
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    opacity: 0.55;
+}
+.countdown-main h2{
+    margin: 0.4rem 0 2.2rem;
+    font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: normal;
+    text-align: center;
+}
+
+/* ---------- 翻牌钟 ---------- */
+.flip-clock{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.35rem, 1vw, 0.9rem);
+}
+.flip-pair{
+    display: flex;
+    gap: clamp(0.2rem, 0.5vw, 0.45rem);
+}
+.flip-colon{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    line-height: 1;
+    opacity: 0.7;
+    transform: translateY(-0.1em);
+    user-select: none;
+}
+
+.flip-card{
+    --card-w: clamp(2rem, 7.5vw, 5rem);
+    --card-h: calc(var(--card-w) * 1.5);
+    --flip-radius: 0.6rem;
+
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    perspective: 800px;
+    font-variant-numeric: tabular-nums;
+}
+.flip-half,
+.flip-flap{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    backface-visibility: hidden;
+}
+.flip-half{
+    z-index: 1;
+}
+.flip-half-top,
+.flip-flap-top{
+    top: 0;
+    border-radius: var(--flip-radius) var(--flip-radius) 0 0;
+    background-color: var(--flip-top);
+    box-shadow: inset 0 -1px 0 var(--flip-seam);
+}
+.flip-half-bottom,
+.flip-flap-bottom{
+    bottom: 0;
+    border-radius: 0 0 var(--flip-radius) var(--flip-radius);
+    background-color: var(--flip-bottom);
+    box-shadow: inset 0 1px 0 var(--flip-seam);
+}
+.flip-digit{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: var(--card-h);
+    line-height: var(--card-h);
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: calc(var(--card-w) * 0.82);
+    color: var(--fg);
+}
+/* 上半层的数字只露出上半，下半层的数字只露出下半 */
+.flip-half-top .flip-digit,
+.flip-flap-top .flip-digit{
+    top: 0;
+}
+.flip-half-bottom .flip-digit,
+.flip-flap-bottom .flip-digit{
+    bottom: 0;
+}
+
+/* 动画层：默认侧立（±90°）不可见，所以动画结束后不会残留旧数字 */
+.flip-flap{
+    z-index: 3;
+    will-change: transform;
+}
+.flip-flap-top{
+    transform-origin: 50% 100%;
+    transform: rotateX(-90deg);
+}
+.flip-flap-bottom{
+    z-index: 4;
+    transform-origin: 50% 0;
+    transform: rotateX(90deg);
+}
+
+/* 旧数字的上半向下翻 */
+@keyframes flip-top{
+    from{ transform: rotateX(0deg); }
+    to{ transform: rotateX(-90deg); }
+}
+/* 新数字的下半翻正 */
+@keyframes flip-bottom{
+    from{ transform: rotateX(90deg); }
+    to{ transform: rotateX(0deg); }
+}
+.flip-card.is-flipping .flip-flap-top{
+    animation: flip-top 300ms ease-in both;
+}
+.flip-card.is-flipping .flip-flap-bottom{
+    animation: flip-bottom 300ms 300ms ease-out both;
+}
+
+/* ---------- 控制按钮 ---------- */
+.countdown-controls{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2.5rem;
+}
+.control-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--surface-hover);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.control-btn img{
+    width: 1.15rem;
+    height: 1.15rem;
+    filter: var(--icon-filter);
+}
+.control-btn:hover,
+.control-btn:focus-visible{
+    background-color: var(--surface-hover);
+    box-shadow: 0 0 12px var(--glow);
+}
+.control-btn:focus-visible{
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+}
+.control-btn:disabled{
+    opacity: 0.4;
+    cursor: default;
+    box-shadow: none;
+}
+/* 暂停 / 继续图标按状态切换 */
+.control-btn .icon-play{
+    display: none;
+}
+.control-btn.is-paused .icon-pause{
+    display: none;
+}
+.control-btn.is-paused .icon-play{
+    display: inline-block;
+}
+
+/* ---------- 归零浮层 ---------- */
+.finish-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background-color: var(--overlay-bg);
+    backdrop-filter: blur(4px);
+}
+/* 作者样式不能覆盖 HTML 的 hidden 行为 */
+.finish-overlay[hidden]{
+    display: none;
+}
+.finish-card{
+    box-sizing: border-box;
+    width: min(24rem, 100%);
+    padding: 2.5rem 2rem;
+    border: 1px solid var(--surface-hover);
+    border-radius: 1.2rem;
+    background-color: var(--bg);
+    color: var(--fg);
+    text-align: center;
+    box-shadow: 0 20px 60px var(--flip-shadow);
+}
+.finish-card h2{
+    margin: 0 0 0.8rem;
+    font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+    font-size: 1.8rem;
+    font-weight: normal;
+}
+.finish-card p{
+    margin: 0 0 1.8rem;
+    opacity: 0.75;
+}
+.finish-home{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    background-color: var(--surface-hover);
+    color: var(--fg);
+    text-decoration: none;
+}
+.finish-home img{
+    width: 1.15rem;
+    height: 1.15rem;
+    filter: var(--icon-filter);
+}
+.finish-home:focus-visible{
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 520px){
+    .waste-main{
+        padding: 2rem 1rem;
+    }
+    .waste-deco{
+        display: none;
+    }
+    .countdown-main{
+        padding: 1.5rem 0.75rem 2rem;
+    }
+}
+
+/* ---------- 减少动态 ---------- */
+@media (prefers-reduced-motion: reduce){
+    .flip-card.is-flipping .flip-flap{
+        animation: none;
+    }
+}

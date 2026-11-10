@@ -1,0 +1,187 @@
+/* ---------- 主题变量（整个页面只靠这两组颜色反转） ---------- */
+:root{
+    --bg: #16161d;
+    --fg: #fffef8;
+    --icon-filter: invert(1);
+    --surface: rgba(255, 255, 255, 0.08);
+    --surface-hover: rgba(255, 255, 255, 0.18);
+    --glow: rgba(255, 254, 248, 0.35);
+}
+html[data-theme="light"]{
+    --bg: #fffef8;
+    --fg: #16161d;
+    --icon-filter: invert(0);
+    --surface: rgba(22, 22, 29, 0.06);
+    --surface-hover: rgba(22, 22, 29, 0.14);
+    --glow: rgba(22, 22, 29, 0.25);
+}
+
+em{
+    font-style: italic;
+}
+body{
+    background-color: var(--bg);
+    color: var(--fg);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* header：三列网格，中间标题始终居中，右侧放控件 */
+header{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+}
+h1{
+    grid-column: 2;
+    margin: 0;
+    text-align: center;
+    color: var(--fg);
+    font-family: 'Times New Roman', Times, 'FangSong', '仿宋', 'STFangsong', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease;
+}
+.icon img{
+    width: 2rem;
+    height: 2rem;
+    fill: currentColor;
+    filter: var(--icon-filter);
+}
+/* 夜间显示月亮，日间显示太阳 */
+.icon-sun{
+    display: none;
+}
+html[data-theme="light"] .icon-moon{
+    display: none;
+}
+html[data-theme="light"] .icon-sun{
+    display: block;
+}
+
+/* ---------- 右上角控件组 ---------- */
+.header-actions{
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+/* 日 / 夜切换滑块 */
+.theme-switch{
+    position: relative;
+    display: block;
+    width: 3.4rem;
+    height: 1.8rem;
+    cursor: pointer;
+}
+.theme-switch input{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+.track{
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background-color: var(--surface);
+    border: 1px solid var(--surface-hover);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.knob{
+    position: absolute;
+    top: 50%;
+    left: 0.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-top: -0.7rem;   /* 用负 margin 居中，保留 transform 给动画 */
+    border-radius: 50%;
+    background-color: var(--fg);
+    transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+}
+.theme-switch input:checked ~ .track .knob{
+    left: calc(100% - 1.6rem);
+}
+.theme-switch input:focus-visible ~ .track{
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+}
+
+/* 右上角首页按钮 */
+.home-btn{
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--surface);
+    cursor: pointer;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.home-btn img{
+    width: 1.5rem;
+    height: 1.5rem;
+    filter: var(--icon-filter);
+    pointer-events: none;
+}
+.home-btn:hover,
+.home-btn:focus-visible{
+    background-color: var(--surface-hover);
+    box-shadow: 0 0 12px var(--glow);
+}
+.home-btn:focus-visible{
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+}
+
+/* ---------- 窄屏：压缩 header，避免标题换行 ---------- */
+@media (max-width: 520px){
+    header{
+        padding: 0.4rem 0.75rem;
+    }
+    h1{
+        gap: 6px;
+        font-size: 1.5rem;
+    }
+    h1 em{
+        white-space: nowrap;
+    }
+    .icon img{
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    .header-actions{
+        gap: 0.5rem;
+    }
+    .theme-switch{
+        width: 2.9rem;
+        height: 1.55rem;
+    }
+    .knob{
+        width: 1.15rem;
+        height: 1.15rem;
+        margin-top: -0.575rem;
+    }
+    .theme-switch input:checked ~ .track .knob{
+        left: calc(100% - 1.35rem);
+    }
+    .home-btn{
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+    .home-btn img{
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+}

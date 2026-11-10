@@ -1,0 +1,49 @@
+/* ==========================================================
+   动效库 (animation.css)
+   通用 keyframes + 工具类，按需在组件上叠加使用
+   ========================================================== */
+
+/* ---------- 果冻 jelly ---------- */
+@keyframes jelly {
+    0%, 100% { transform: scale(1, 1); }
+    25%      { transform: scale(0.92, 1.08); }
+    50%      { transform: scale(1.08, 0.92); }
+    75%      { transform: scale(0.96, 1.04); }
+}
+
+/* 入场：从无到有弹一下 */
+@keyframes jelly-in {
+    0%   { transform: scale(0, 0); opacity: 0; }
+    60%  { transform: scale(1.15, 0.85); opacity: 1; }
+    80%  { transform: scale(0.95, 1.05); }
+    100% { transform: scale(1, 1); }
+}
+
+/* ---------- 工具类 ---------- */
+/* 悬停 / 键盘聚焦时播放果冻抖动 */
+.ani-jelly:hover,
+.ani-jelly:focus-visible {
+    animation: jelly 0.6s ease;
+}
+
+/* 按下时压扁一下，松手回弹由 hover 动画接上 */
+.ani-jelly:active {
+    transform: scale(0.9, 0.9);
+    transition: transform 0.1s ease;
+}
+
+/* 挂载即播放的入场果冻 */
+.ani-jelly-in {
+    animation: jelly-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* 尊重系统「减少动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+    .ani-jelly:hover,
+    .ani-jelly:focus-visible,
+    .ani-jelly:active,
+    .ani-jelly-in {
+        animation: none;
+        transform: none;
+    }
+}

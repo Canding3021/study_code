@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Vendor</title>
+    <link rel="stylesheet" href="../Project/style/animation.css">
+    <link rel="stylesheet" href="../Project/style/style.css">
+    <link rel="stylesheet" href="../Project/style/waste-time.css">
+</head>
+<body>
+    <header>
+        <h1>
+            <div class="icon">
+                <img class="icon-moon" src="image/header/moon.svg" alt="moon">
+                <img class="icon-sun" src="image/header/sun.svg" alt="sun">
+            </div>
+            <em>
+                Time seller
+            </em>
+            <div class="icon">
+                <img class="icon-moon" src="image/header/moon.svg" alt="moon">
+                <img class="icon-sun" src="image/header/sun.svg" alt="sun">
+            </div>
+        </h1>
+        <div class="header-actions">
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle" role="switch" aria-label="切换日间 / 夜间模式">
+                <span class="track">
+                    <span class="knob"></span>
+                </span>
+            </label>
+            <button class="home-btn ani-jelly" type="button" aria-label="home">
+                <img src="image/header/house.svg" alt="home">
+            </button>
+        </div>
+    </header>
+
+    <main class="waste-main">
+        <section class="waste-panel ani-jelly-in" aria-labelledby="waste-title">
+            <img class="waste-deco waste-deco-left" src="image/timer.svg" alt="" aria-hidden="true">
+            <img class="waste-deco waste-deco-right" src="image/clock-plus.svg" alt="" aria-hidden="true">
+
+            <h2 id="waste-title">浪费时间</h2>
+            <p class="waste-subtitle">选一段时间，然后什么都不做。</p>
+
+            <div class="preset-list" role="group" aria-label="选择倒计时时长">
+                <a class="preset-btn ani-jelly" href="waste-time.html" data-seconds="60">1 分钟</a>
+                <a class="preset-btn ani-jelly" href="waste-time.html" data-seconds="300">5 分钟</a>
+                <a class="preset-btn ani-jelly" href="waste-time.html" data-seconds="600">10 分钟</a>
+                <a class="preset-btn ani-jelly" href="waste-time.html" data-seconds="1500">25 分钟</a>
+                <a class="preset-btn ani-jelly" href="waste-time.html" data-seconds="3600">60 分钟</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script src="js/waste-time.js"></script>
+</body>
+</html>
